@@ -1,7 +1,4 @@
-import datetime,time,os,sys,requests
-
-from os import listdir
-from os.path import isfile, join
+import datetime,time,os,sys,requests,json
 
 if(sys.platform.lower().startswith('linux')):
     OS_TYPE = 'linux'
@@ -68,11 +65,20 @@ from custom_colors import *
 from benchmark import *
 
 from access import *
+
+from command_line_arguments import *
 # < ---  End  Custom Classes Import --- >
 
+# < --- Begin Module Classes Import --- >
 from tradeogre import *
+# < ---  End  Model Classes Import  --- >
 
 runtime = Benchmark()
+
+parameters = Parse()
+parameters.add_expectation('-crypto-pair', 'string', True, False)
+parameters.parse_commandline()
+parameters.validate_requirements()
 
 exchange = {}
 readfile = open(INPUTS_DIR + 'untitled.pyc', 'r')
@@ -82,8 +88,27 @@ for line in readfile:
     #print(temp_exchange + "\t" + temp_key + "\t" + temp_secret)
 readfile.close()
 
+print(parameters.get_parameter_names())
+crypt_pair = parameters.get_parameter('-crypto-pair').value
+
 api_tradeogre = TradeOgre(exchange['tradeogre'].get_key(),exchange['tradeogre'].get_secret())
-print(str(api_tradeogre.orders('BTC-RYO')))
+#print(str(api_tradeogre.order_book(crypt_pair)))
+
+tradeogre_json_result = api_tradeogre.order_book(crypt_pair)
+tradeogre_buy = tradeogre_json_result['buy']
+tradeogre_sell = tradeogre_json_result['sell']
+
+tradeogre_buy_total = float(0)
+for key in list(tradeogre_buy.keys()):
+    tradeogre_buy_total += float(tradeogre_buy[key])
+
+tradeogre_sell_total = float(0)
+for key in list(tradeogre_sell.keys()):
+    tradeogre_sell_total += float(tradeogre_sell[key])
+
+print("TradeOgre")
+print("Buy Total: " + str(tradeogre_buy_total))
+print("Sell Total: " + str(tradeogre_sell_total))
 
 #key = input("Key: ")
 #secret = input("Secret: ")
