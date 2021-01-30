@@ -158,7 +158,7 @@ class Parse:
                     ##DEBUG
                     ##print("Assigning: " + previous_item + " <-- " + item)
                     self.parameters[previous_item] = Parameter(self.get_value_datatype(item),item,False,False)
-                    self.parameters[previous_item].show_parameter()
+                    #self.parameters[previous_item].show_parameter()
             previous_item = item
 
         #return self.parameters
@@ -191,7 +191,8 @@ class Parse:
                     else:
                         value = input(key + ": ")
 
-
+    def get_parameter(self,parameter):
+        return self.parameters[parameter]
 
     def get_value_datatype(self,value):
         """
@@ -267,7 +268,7 @@ class Parameter:
             else:
                 self.value_type = "Relative Path to File"
         else:
-            file_check = os.path.isfile(os.getcwd() + '/' + value))
+            file_check = os.path.isfile(os.getcwd() + '/' + value)
             self.directory = os.getcwd()
 
 
