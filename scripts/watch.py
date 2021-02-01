@@ -241,7 +241,7 @@ print("Buy Total:\t" + str(bittrex_buy_total))
 print("Sell Total:\t" + str(bittrex_sell_total))
 
 total_buy = bittrex_buy_total + tradeogre_buy_total + kraken_buy_total + binance_buy_total
-total_sell = bittrex_sell_total + tradeogre_sell_total + kraken_sell_total + binance_buy_total
+total_sell = bittrex_sell_total + tradeogre_sell_total + kraken_sell_total + binance_sell_total
 
 binance_buy_percent = ((binance_buy_total/total_buy) * 100)
 tradeogre_buy_percent = ((tradeogre_buy_total/total_buy) * 100)
@@ -256,6 +256,9 @@ kraken_sell_percent = ((kraken_sell_total/float(total_sell)) * 100)
 bittrex_sell_percent = ((bittrex_sell_total/float(total_sell)) * 100)
 print("Selling")
 print("Binance: " + str(binance_sell_percent)[:4] + "%\tTradeogre: " + str(tradeogre_sell_percent)[:4] + "%\tKraken: " + str(kraken_sell_percent)[:4] + "%\tBittrex: " + str(bittrex_sell_percent)[:4] + "%")
+
+#print("Selling Total:")
+#print(str())
 
 runtime.stop()
 print(" Program Runtime: " + runtime.human_readable_string())
