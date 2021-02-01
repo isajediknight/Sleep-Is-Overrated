@@ -42,3 +42,12 @@ class CryptoPairs:
                 raise Exception(" No pair defined for " + self.exchange + " with " + self.main + " and " + self.alt)
         else:
             raise Exception(" Exchange " + self.exchange + " is not currently supported")
+
+    def supported_exchange(self,exchange):
+        return exchange.lower() in ['tradeogre','binance','kraken','bittrex']
+
+    def supported_crypto_main(self,main):
+        return main.upper() in ['BTC']
+
+    def supported_crypto_alt(self,alt):
+        return alt.upper() in ['DOGE']
