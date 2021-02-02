@@ -43,6 +43,35 @@ class CryptoPairs:
         else:
             raise Exception(" Exchange " + self.exchange + " is not currently supported")
 
+    def get_corrected_pair(self,exchange='tradeogre'):
+        """
+        I realized that sending in the exchange was needed for threading than using a class variable
+        """
+        if exchange == 'tradeogre':
+            if self.main == 'BTC' and self.alt == 'DOGE':
+                return 'BTC-DOGE'
+            elif self.main == 'BTC' and self.alt == 'RYO':
+                return 'BTC-RYO'
+            else:
+                raise Exception(" No pair defined for " + exchange + " with " + self.main + " and " + self.alt)
+        elif exchange == 'binance':
+            if self.main == 'BTC' and self.alt == 'DOGE':
+                return 'DOGE/BTC'
+            else:
+                raise Exception(" No pair defined for " + exchange + " with " + self.main + " and " + self.alt)
+        elif exchange == 'kraken':
+            if self.main == 'BTC' and self.alt == 'DOGE':
+                return 'DOGE/BTC'
+            else:
+                raise Exception(" No pair defined for " + exchange + " with " + self.main + " and " + self.alt)
+        elif exchange == 'bittrex':
+            if self.main == 'BTC' and self.alt == 'DOGE':
+                return 'DOGE/BTC'
+            else:
+                raise Exception(" No pair defined for " + exchange + " with " + self.main + " and " + self.alt)
+        else:
+            raise Exception(" Exchange " + exchange + " is not currently supported")
+
     def supported_exchange(self,exchange):
         return exchange.lower() in ['tradeogre','binance','kraken','bittrex']
 
