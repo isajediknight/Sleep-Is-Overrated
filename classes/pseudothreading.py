@@ -69,38 +69,99 @@ from access import *
 
 from crypto_pairs import *
 
+from crypto_metrics import *
 # < ---  End  Custom Classes Import --- >
 
 class thread(threading.Thread):
     def __init__(self, exchange, main, alt):
-        threading.Thread.__init__(self)
+
         self.exchange = exchange
         self.main = main
         self.alt = alt
 
+        self.crypto_pair = CryptoPairs('tradeogre', main, alt)
 
-
+        # Read in exchanges and API keys
+        self.exchange_keys = {}
+        readfile = open(INPUTS_DIR + 'untitled.pyc', 'r')
+        for line in readfile:
+            temp_exchange, temp_key, temp_secret = list(line.strip().split(','))
+            self.exchange_keys[temp_exchange] = Credentials(temp_exchange, temp_key, temp_secret)
+            # print(temp_exchange + "\t" + temp_key + "\t" + temp_secret)
+        readfile.close()
 
         # helper function to execute the threads
 
+        threading.Thread.__init__(self)
+
     def run(self):
-        self.master = Metrics(parameters.get_parameter('-crypto-main').value, parameters.get_parameter('-crypto-alt').value)
+        master = Metrics(self.main, self.alt)
 
-        if exchnage == 'tradeogre':
+        if self.exchange == 'tradeogre':
             buying, selling = master.call_order_book('tradeogre')
+
+            self.buy_total = float(0)
+            for key in list(buying.keys()):
+                self.buy_total += float(buying[key])
+
+            self.sell_total = float(0)
+            for key in list(selling.keys()):
+                self.sell_total += float(selling[key])
+
             print("TradeOgre")
-            print("Buying: " + "")
-        elif exchange == 'kraken':
+            print("Buying: " + str(self.buy_total))
+            print("Selling: " + str(self.sell_total))
+        elif self.exchange == 'kraken':
 
-            order_book_dict_result = exchange.fetch_order_book(crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
+            #order_book_dict_result = exchange.fetch_order_book(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
 
-            buying = kraken_dict_result['bids']
-            selling = kraken_dict_result['asks']
+            #buying = kraken_dict_result['bids']
+            #selling = kraken_dict_result['asks']
+
+            buying, selling = master.call_order_book('kraken')
 
             self.buy_total = float(0)
             for price, total, unknown in buying:
-                buy_total += float(total)
+                self.buy_total += float(total)
 
             self.sell_total = float(0)
             for price, total, unknown in selling:
-                sell_total += float(total)
+                self.sell_total += float(total)
+
+            print("Kraken")
+            print("Buying: " + str(self.buy_total))
+            print("Selling: " + str(self.sell_total))
+        elif self.exchange == 'binance':
+
+            buying, selling = master.call_order_book('binance')
+
+            self.buy_total = float(0)
+            for price, total in buying:
+                self.buy_total += float(total)
+
+            self.sell_total = float(0)
+            for price, total in selling:
+                self.sell_total += float(total)
+
+            print("Binance")
+            print("Buying: " + str(self.buy_total))
+            print("Selling: " + str(self.sell_total))
+
+        elif self.exchange == 'bittrex':
+
+            buying, selling = master.call_order_book('bittrex')
+
+            self.buy_total = float(0)
+            for price, total in buying:
+                self.buy_total += float(total)
+
+            self.sell_total = float(0)
+            for price, total in selling:
+                self.sell_total += float(total)
+
+            print("Bittrex")
+            print("Buying: " + str(self.buy_total))
+            print("Selling: " + str(self.sell_total))
+
+        else:
+            raise Exception(" Exchange " + self.exchange + " is not currently supported")
