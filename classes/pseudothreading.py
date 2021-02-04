@@ -73,11 +73,13 @@ from crypto_metrics import *
 # < ---  End  Custom Classes Import --- >
 
 class thread(threading.Thread):
-    def __init__(self, exchange, main, alt):
 
-        self.exchange = exchange
-        self.main = main
-        self.alt = alt
+    def __init__(self, exchange, main, alt, api_call_type):
+
+        self.exchange = exchange.lower()
+        self.main = main.upper()
+        self.alt = alt.upper()
+        self.api_call_type = api_call_type.lower()
 
         self.crypto_pair = CryptoPairs('tradeogre', main, alt)
 
@@ -97,71 +99,97 @@ class thread(threading.Thread):
     def run(self):
         master = Metrics(self.main, self.alt)
 
-        if self.exchange == 'tradeogre':
-            buying, selling = master.call_order_book('tradeogre')
+        self.thread_results = {}
 
-            self.buy_total = float(0)
-            for key in list(buying.keys()):
-                self.buy_total += float(buying[key])
+        if self.api_call_type == 'order book':
 
-            self.sell_total = float(0)
-            for key in list(selling.keys()):
-                self.sell_total += float(selling[key])
+            if self.exchange == 'tradeogre':
+                buying, selling = master.call_order_book('tradeogre')
 
-            print("TradeOgre")
-            print("Buying: " + str(self.buy_total))
-            print("Selling: " + str(self.sell_total))
-        elif self.exchange == 'kraken':
+                self.buy_total = float(0)
+                for key in list(buying.keys()):
+                    self.buy_total += float(buying[key])
 
-            #order_book_dict_result = exchange.fetch_order_book(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
+                self.sell_total = float(0)
+                for key in list(selling.keys()):
+                    self.sell_total += float(selling[key])
 
-            #buying = kraken_dict_result['bids']
-            #selling = kraken_dict_result['asks']
+                # Debugging
+                #print("TradeOgre")
+                #print("Buying: " + str(self.buy_total))
+                #print("Selling: " + str(self.sell_total))
 
-            buying, selling = master.call_order_book('kraken')
+                # Save this data to return it
+                self.thread_results[self.exchange] =  (self.buy_total, self.sell_total)
 
-            self.buy_total = float(0)
-            for price, total, unknown in buying:
-                self.buy_total += float(total)
+            elif self.exchange == 'kraken':
 
-            self.sell_total = float(0)
-            for price, total, unknown in selling:
-                self.sell_total += float(total)
+                buying, selling = master.call_order_book('kraken')
 
-            print("Kraken")
-            print("Buying: " + str(self.buy_total))
-            print("Selling: " + str(self.sell_total))
-        elif self.exchange == 'binance':
+                self.buy_total = float(0)
+                for price, total, unknown in buying:
+                    self.buy_total += float(total)
 
-            buying, selling = master.call_order_book('binance')
+                self.sell_total = float(0)
+                for price, total, unknown in selling:
+                    self.sell_total += float(total)
 
-            self.buy_total = float(0)
-            for price, total in buying:
-                self.buy_total += float(total)
+                # Debugging
+                #print("Kraken")
+                #print("Buying: " + str(self.buy_total))
+                #print("Selling: " + str(self.sell_total))
 
-            self.sell_total = float(0)
-            for price, total in selling:
-                self.sell_total += float(total)
+                # Save this data to return it
+                self.thread_results = 'A STRING'#[self.exchange] =  (self.buy_total, self.sell_total)
 
-            print("Binance")
-            print("Buying: " + str(self.buy_total))
-            print("Selling: " + str(self.sell_total))
+            elif self.exchange == 'binance':
 
-        elif self.exchange == 'bittrex':
+                buying, selling = master.call_order_book('binance')
 
-            buying, selling = master.call_order_book('bittrex')
+                self.buy_total = float(0)
+                for price, total in buying:
+                    self.buy_total += float(total)
 
-            self.buy_total = float(0)
-            for price, total in buying:
-                self.buy_total += float(total)
+                self.sell_total = float(0)
+                for price, total in selling:
+                    self.sell_total += float(total)
 
-            self.sell_total = float(0)
-            for price, total in selling:
-                self.sell_total += float(total)
+                # Debugging
+                #print("Binance")
+                #print("Buying: " + str(self.buy_total))
+                #print("Selling: " + str(self.sell_total))
 
-            print("Bittrex")
-            print("Buying: " + str(self.buy_total))
-            print("Selling: " + str(self.sell_total))
+                # Save this data to return it
+                self.thread_results[self.exchange] =  (self.buy_total, self.sell_total)
 
+            elif self.exchange == 'bittrex':
+
+                buying, selling = master.call_order_book('bittrex')
+
+                self.buy_total = float(0)
+                for price, total in buying:
+                    self.buy_total += float(total)
+
+                self.sell_total = float(0)
+                for price, total in selling:
+                    self.sell_total += float(total)
+
+                # Debugging
+                #print("Bittrex")
+                #print("Buying: " + str(self.buy_total))
+                #print("Selling: " + str(self.sell_total))
+
+                # Save this data to return it
+                self.thread_results[self.exchange] =  (self.buy_total, self.sell_total)
+
+            else:
+                raise Exception(" Exchange " + self.exchange + " is not currently supported")
         else:
-            raise Exception(" Exchange " + self.exchange + " is not currently supported")
+            raise Exception(" API Call " + self.api_call_type + " is not currently supported")
+
+    def get_thread_results(self):
+        """
+        There has to be a better way to do this...
+        Getting data from the finished thread
+        """
+        return self.thread_results
