@@ -71,34 +71,49 @@ from command_line_arguments import *
 from pseudothreading import *
 # < ---  End  Custom Classes Import --- >
 
+# Time all the things!
 runtime = Benchmark()
 
+# Text Coloration
 cc = ColoredText()
 
 # Get parameters from commandline
 parameters = Parse()
+
+# Define what we're expecting to be passed in
 parameters.add_expectation('-crypto-main', 'string', True, False)
 parameters.add_expectation('-crypto-alt', 'string', True, False)
+
+# Assign passed in values
 parameters.parse_commandline()
+
+# Check expectations were met
 parameters.validate_requirements()
 
+# World Reserve Crypto
 main = parameters.get_parameter('-crypto-main').value
+# Poor wanna be Crypto
 alt = parameters.get_parameter('-crypto-alt').value
 
-thread1 = thread('kraken',main,alt)
-thread2 = thread('binance',main,alt);
-thread3 = thread('bittrex',main,alt);
-thread4 = thread('tradeogre',main,alt);
+# Define threads to run
+thread1 = thread('kraken',main,alt,'order book')
+thread2 = thread('binance',main,alt,'order book');
+thread3 = thread('bittrex',main,alt,'order book');
+thread4 = thread('tradeogre',main,alt,'order book');
 
+# Run the threads!
 thread1.start()
 thread2.start()
 thread3.start()
 thread4.start()
 
+# Wait for all threads to finish
 thread1.join()
 thread2.join()
 thread3.join()
 thread4.join()
+
+print(str(thread1.get_thread_results()))
 
 runtime.stop()
 print(" Program Runtime: " + runtime.human_readable_string())
