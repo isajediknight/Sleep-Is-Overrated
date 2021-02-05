@@ -1,4 +1,4 @@
-import datetime,time,os,sys,requests,json
+import datetime,time,os,sys
 
 if(sys.platform.lower().startswith('linux')):
     OS_TYPE = 'linux'
@@ -75,7 +75,7 @@ from pseudothreading import *
 runtime = Benchmark()
 
 # Text Coloration
-cc = ColoredText()
+cc = ColoredText(['exchange'],['38;5;214m'])
 
 # Get parameters from commandline
 parameters = Parse()
@@ -96,10 +96,11 @@ main = parameters.get_parameter('-crypto-main').value
 alt = parameters.get_parameter('-crypto-alt').value
 
 # Define threads to run
-thread1 = thread('kraken',main,alt,'order book')
-thread2 = thread('binance',main,alt,'order book');
-thread3 = thread('bittrex',main,alt,'order book');
-thread4 = thread('tradeogre',main,alt,'order book');
+#'order book'
+thread1 = thread('kraken',main,alt,'ticker')
+thread2 = thread('binance',main,alt,'ticker');
+thread3 = thread('bittrex',main,alt,'ticker');
+thread4 = thread('tradeogre',main,alt,'ticker');
 
 # Run the threads!
 thread1.start()
@@ -113,7 +114,14 @@ thread2.join()
 thread3.join()
 thread4.join()
 
-print(str(thread1.get_thread_results()))
+print(cc.cc("Kraken:",'exchange'))
+print(str(thread1.get_thread_results())+"\n")
+print(cc.cc("Binance:",'exchange'))
+print(str(thread2.get_thread_results())+"\n")
+print(cc.cc("Bittrex:",'exchange'))
+print(str(thread3.get_thread_results())+"\n")
+print(cc.cc("TradeOgre:",'exchange'))
+print(str(thread4.get_thread_results())+"\n")
 
 runtime.stop()
 print(" Program Runtime: " + runtime.human_readable_string())
