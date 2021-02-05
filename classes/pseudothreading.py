@@ -184,6 +184,14 @@ class thread(threading.Thread):
 
             else:
                 raise Exception(" Exchange " + self.exchange + " is not currently supported")
+
+        elif self.api_call_type == 'ticker':
+
+            if self.exchange == 'tradeogre':
+                self.thread_results[self.exchange] = master.call_fetch_ticker('tradeogre')
+            else:
+                self.thread_results[self.exchange] = master.call_fetch_ticker(self.exchange)['DOGE/BTC']
+
         else:
             raise Exception(" API Call " + self.api_call_type + " is not currently supported")
 
