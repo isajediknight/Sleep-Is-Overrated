@@ -101,6 +101,9 @@ class thread(threading.Thread):
 
         self.thread_results = {}
 
+        # Time all the things!
+        self.runtime = Benchmark()
+
         if self.api_call_type == 'order book':
 
             if self.exchange == 'tradeogre':
@@ -187,6 +190,7 @@ class thread(threading.Thread):
 
         elif self.api_call_type == 'ticker':
 
+
             if self.exchange == 'tradeogre':
                 self.thread_results[self.exchange] = master.call_fetch_ticker('tradeogre')
             else:
@@ -195,9 +199,36 @@ class thread(threading.Thread):
         else:
             raise Exception(" API Call " + self.api_call_type + " is not currently supported")
 
+        self.runtime.stop()
+
     def get_thread_results(self):
         """
         There has to be a better way to do this...
         Getting data from the finished thread
         """
-        return self.thread_results
+        if self.api_call_type == 'ticker':
+
+            # non tradeogre needs to be changed to non scientific notation
+            bid = self.thread_results[self.exchange]['bid']
+            ask = self.thread_results[self.exchange]['ask']
+
+            if self.exchange == 'tradeogre':
+
+                bid_volume = self.thread_results[self.exchange]['volume']
+                ask_volume = self.thread_results[self.exchange]['volume']
+            else:
+                bid = format(bid, '.8f')
+                ask = format(ask, '.8f')
+                bid_volume = self.thread_results[self.exchange]['bidVolume']
+                ask_volume = self.thread_results[self.exchange]['askVolume']
+
+            return bid,ask,bid_volume,ask_volume
+
+        else:
+            return self.thread_results
+
+    def get_elapsed_time(self):
+        """
+        Return the Benchmark object
+        """
+        return self.runtime
