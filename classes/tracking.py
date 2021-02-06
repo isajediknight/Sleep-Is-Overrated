@@ -17,9 +17,14 @@ class Tracking:
         #else:
         this_ticker = {}
         this_ticker[exchange] = Ticker(timestamp,exchange,bid,ask,bid_volume,ask_volume)
-        self.ticker[timestamp] = {}
+        if timestamp not in list(self.ticker.keys()):
+            self.ticker[timestamp] = {}
+
         self.ticker[timestamp][exchange] = this_ticker[exchange]
         #self.ticker[timestamp][exchange] = Ticker(timestamp,exchange,bid,ask,bid_volume,ask_volume)
+
+    def get_keys(self):
+        return list(self.ticker.keys())
 
     def get_ticker(self):
         return self.ticker

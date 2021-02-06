@@ -99,7 +99,7 @@ alt = parameters.get_parameter('-crypto-alt').value
 
 data = Tracking(main,alt)
 
-for run_counter in range(0,5):
+for run_counter in range(0,2):
 
     # Define threads to run
     # 'order book'
@@ -121,41 +121,26 @@ for run_counter in range(0,5):
     thread4.join()
 
     timestamp = str(datetime.datetime.now().utcnow().timestamp())
-    bid = thread1.get_thread_results()['kraken']['bid']
-    ask = thread1.get_thread_results()['kraken']['ask']
-    bid_volume = thread1.get_thread_results()['kraken']['bidVolume']
-    ask_volume = thread1.get_thread_results()['kraken']['askVolume']
+    bid, ask, bid_volume, ask_volume = thread1.get_thread_results()
     data.add_ticker_results(timestamp,'kraken',bid,ask,bid_volume,ask_volume)
 
-    bid = thread2.get_thread_results()['binance']['bid']
-    ask = thread2.get_thread_results()['binance']['ask']
-    bid_volume = thread2.get_thread_results()['binance']['bidVolume']
-    ask_volume = thread2.get_thread_results()['binance']['askVolume']
+    bid, ask, bid_volume, ask_volume = thread2.get_thread_results()
     data.add_ticker_results(timestamp, 'binance', bid, ask, bid_volume, ask_volume)
 
-    bid = thread3.get_thread_results()['bittrex']['bid']
-    ask = thread3.get_thread_results()['bittrex']['ask']
-    bid_volume = thread3.get_thread_results()['bittrex']['bidVolume']
-    ask_volume = thread3.get_thread_results()['bittrex']['askVolume']
+    bid, ask, bid_volume, ask_volume = thread3.get_thread_results()
     data.add_ticker_results(timestamp, 'bittrex', bid, ask, bid_volume, ask_volume)
 
-    bid = thread4.get_thread_results()['tradeogre']['bid']
-    ask = thread4.get_thread_results()['tradeogre']['ask']
-    bid_volume = thread4.get_thread_results()['tradeogre']['volume']
-    ask_volume = thread4.get_thread_results()['tradeogre']['volume']
+    bid, ask, bid_volume, ask_volume = thread4.get_thread_results()
     data.add_ticker_results(timestamp, 'tradeogre', bid, ask, bid_volume, ask_volume)
 
-    print(data.get_ticker().keys())
-    print(data[timestamp].get_ticker().get_bid())
-
-    temp = data[timestamp]['kraken']
-    print(temp.bid)
-    temp = data[timestamp]['binance'].get_bid()
-    print(temp.bid)
-    temp = data[timestamp]['bittrex'].get_bid()
-    print(temp.bid)
-    temp = data[timestamp]['tradeogre'].get_bid()
-    print(temp.bid)
+    temp = data.get_ticker()[timestamp]['binance'].get_bid()
+    print(temp+"\t"+thread1.get_elapsed_time().human_readable_string())
+    temp = data.get_ticker()[timestamp]['bittrex'].get_bid()
+    print(temp+"\t"+thread2.get_elapsed_time().human_readable_string())
+    temp = data.get_ticker()[timestamp]['tradeogre'].get_bid()
+    print(temp+"\t"+thread3.get_elapsed_time().human_readable_string())
+    temp = data.get_ticker()[timestamp]['kraken'].get_bid()
+    print(temp+"\t"+thread4.get_elapsed_time().human_readable_string())
     print("")
 
     del thread1
