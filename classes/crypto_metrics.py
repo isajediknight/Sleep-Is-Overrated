@@ -94,135 +94,132 @@ class Metrics:
         self.crypto_pair = CryptoPairs('tradeogre', main, alt)
 
     def call_order_book(self,exchange='tradeogre'):
-        if(exchange in list(self.exchange_keys.keys())):
-            if exchange == 'tradeogre':
-                self.crypto_pair.set_exchange('tradeogre')
-                api_tradeogre = TradeOgre(self.exchange_keys['tradeogre'].get_key(), self.exchange_keys['tradeogre'].get_secret())
-                tradeogre_json_result = api_tradeogre.order_book(self.crypto_pair.get_corrected_pair_for_exchange())
-                #tradeogre_buy = tradeogre_json_result['buy']
-                #tradeogre_sell = tradeogre_json_result['sell']
-                return tradeogre_json_result['buy'],tradeogre_json_result['sell']
-            elif exchange == 'binance':
-                exchange_id = exchange
-                self.crypto_pair.set_exchange(exchange_id)
-                exchange_class = getattr(ccxt, exchange_id)
-                exchange = exchange_class({
-                    'apiKey': self.exchange_keys[exchange_id].get_key(),
-                    'secret': self.exchange_keys[exchange_id].get_secret(),
-                    'timeout': 30000,
-                    'enableRateLimit': True,
-                })
-                exchange.verbose = False
-                # dict keys ['bids', 'asks', 'timestamp', 'datetime', 'nonce']
-                binance_dict_result = exchange.fetch_order_book(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
-                #binance_buy = binance_dict_result['bids']
-                #binance_sell = binance_dict_result['asks']
-                return binance_dict_result['bids'], binance_dict_result['asks']
-            elif exchange == 'bittrex':
-                exchange_id = exchange
-                self.crypto_pair.set_exchange(exchange_id)
-                exchange_class = getattr(ccxt, exchange_id)
-                exchange = exchange_class({
-                    #    'apiKey': self.exchange_keys[exchange_id].get_key(),
-                    #    'secret': self.exchange_keys[exchange_id].get_secret(),
-                    'timeout': 30000,
-                    'enableRateLimit': True,
-                })
-                exchange.verbose = False
-                # dict keys ['bids', 'asks', 'timestamp', 'datetime', 'nonce']
-                bittrex_dict_result = exchange.fetch_order_book(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
-                # print(list(depth.keys()))
-                #bittrex_buy = bittrex_dict_result['bids']
-                #bittrex_sell = bittrex_dict_result['asks']
-                return bittrex_dict_result['bids'], bittrex_dict_result['asks']
-            elif exchange == 'kraken':
-                exchange_id = 'kraken'
-                self.crypto_pair.set_exchange(exchange_id)
-                exchange_class = getattr(ccxt, exchange_id)
-                exchange = exchange_class({
-                    #    'apiKey': self.exchange_keys[exchange_id].get_key(),
-                    #    'secret': self.exchange_keys[exchange_id].get_secret(),
-                    'timeout': 30000,
-                    'enableRateLimit': True,
-                })
-                exchange.verbose = False
-                # dict keys ['bids', 'asks', 'timestamp', 'datetime', 'nonce']
-                kraken_dict_result = exchange.fetch_order_book(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
-                # print(list(depth.keys()))
-                #kraken_buy = kraken_dict_result['bids']
-                #kraken_sell = kraken_dict_result['asks']
-                return kraken_dict_result['bids'],kraken_dict_result['asks']
-            else:
-                print("Exchange " + exhcange + " has not been properly added to ../classes/crypto_metrics.py")
+        # if(exchange in list(self.exchange_keys.keys())):
+        # else:
+        #    raise Exception(" Exchange " + exchange + " information is not present in the keys file: " + INPUTS_DIR + 'untitled.pyc')
+        if exchange == 'tradeogre':
+            self.crypto_pair.set_exchange('tradeogre')
+            api_tradeogre = TradeOgre(self.exchange_keys['tradeogre'].get_key(), self.exchange_keys['tradeogre'].get_secret())
+            tradeogre_json_result = api_tradeogre.order_book(self.crypto_pair.get_corrected_pair_for_exchange())
+            #tradeogre_buy = tradeogre_json_result['buy']
+            #tradeogre_sell = tradeogre_json_result['sell']
+            return tradeogre_json_result['buy'],tradeogre_json_result['sell']
+        elif exchange == 'binance':
+            exchange_id = exchange
+            self.crypto_pair.set_exchange(exchange_id)
+            exchange_class = getattr(ccxt, exchange_id)
+            exchange = exchange_class({
+                'apiKey': self.exchange_keys[exchange_id].get_key(),
+                'secret': self.exchange_keys[exchange_id].get_secret(),
+                'timeout': 30000,
+                'enableRateLimit': True,
+            })
+            exchange.verbose = False
+            # dict keys ['bids', 'asks', 'timestamp', 'datetime', 'nonce']
+            binance_dict_result = exchange.fetch_order_book(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
+            #binance_buy = binance_dict_result['bids']
+            #binance_sell = binance_dict_result['asks']
+            return binance_dict_result['bids'], binance_dict_result['asks']
+        elif exchange == 'bittrex':
+            exchange_id = exchange
+            self.crypto_pair.set_exchange(exchange_id)
+            exchange_class = getattr(ccxt, exchange_id)
+            exchange = exchange_class({
+                #    'apiKey': self.exchange_keys[exchange_id].get_key(),
+                #    'secret': self.exchange_keys[exchange_id].get_secret(),
+                'timeout': 30000,
+                'enableRateLimit': True,
+            })
+            exchange.verbose = False
+            # dict keys ['bids', 'asks', 'timestamp', 'datetime', 'nonce']
+            bittrex_dict_result = exchange.fetch_order_book(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
+            # print(list(depth.keys()))
+            #bittrex_buy = bittrex_dict_result['bids']
+            #bittrex_sell = bittrex_dict_result['asks']
+            return bittrex_dict_result['bids'], bittrex_dict_result['asks']
+        elif exchange == 'poloniex':
+            exchange_id = exchange
+            self.crypto_pair.set_exchange(exchange_id)
+            exchange_class = getattr(ccxt, exchange_id)
+            exchange = exchange_class({
+                #    'apiKey': self.exchange_keys[exchange_id].get_key(),
+                #    'secret': self.exchange_keys[exchange_id].get_secret(),
+                'timeout': 30000,
+                'enableRateLimit': True,
+            })
+            exchange.verbose = False
+            # dict keys ['bids', 'asks', 'timestamp', 'datetime', 'nonce']
+            poloniex_dict_result = exchange.fetch_order_book(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
+            # print(list(depth.keys()))
+            #poloniex_buy = poloniex_dict_result['bids']
+            #poloniex_sell = poloniex_dict_result['asks']
+            return poloniex_dict_result['bids'], poloniex_dict_result['asks']
+        elif exchange == 'kraken':
+            exchange_id = 'kraken'
+            self.crypto_pair.set_exchange(exchange_id)
+            exchange_class = getattr(ccxt, exchange_id)
+            exchange = exchange_class({
+                #    'apiKey': self.exchange_keys[exchange_id].get_key(),
+                #    'secret': self.exchange_keys[exchange_id].get_secret(),
+                'timeout': 30000,
+                'enableRateLimit': True,
+            })
+            exchange.verbose = False
+            # dict keys ['bids', 'asks', 'timestamp', 'datetime', 'nonce']
+            kraken_dict_result = exchange.fetch_order_book(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
+            # print(list(depth.keys()))
+            #kraken_buy = kraken_dict_result['bids']
+            #kraken_sell = kraken_dict_result['asks']
+            return kraken_dict_result['bids'],kraken_dict_result['asks']
         else:
-            raise Exception(" Exchange " + exchange + " information is not present in the keys file: " + INPUTS_DIR + 'untitled.pyc')
+            print("Exchange " + exhcange + " has not been properly added to ../classes/crypto_metrics.py")
 
     def call_fetch_ticker(self,exchange='tradeogre'):
-        if(exchange in list(self.exchange_keys.keys())):
-            if exchange == 'tradeogre':
-                self.crypto_pair.set_exchange('tradeogre')
-                api_tradeogre = TradeOgre(self.exchange_keys['tradeogre'].get_key(), self.exchange_keys['tradeogre'].get_secret())
-                # dict keys ['success','initialprice','price','high','low','volume','bid','ask']
-                tradeogre_json_result = api_tradeogre.ticker(self.crypto_pair.get_corrected_pair_for_exchange())
-                return tradeogre_json_result
-            elif exchange == 'binance':
-                exchange_id = exchange
-                self.crypto_pair.set_exchange(exchange_id)
-                exchange_class = getattr(ccxt, exchange_id)
+        # if(exchange in list(self.exchange_keys.keys())):
+        # else:
+        #    raise Exception(" Exchange " + exchange + " information is not present in the keys file: " + INPUTS_DIR + 'untitled.pyc')
+        if exchange == 'tradeogre':
+            self.crypto_pair.set_exchange('tradeogre')
+            api_tradeogre = TradeOgre(self.exchange_keys['tradeogre'].get_key(), self.exchange_keys['tradeogre'].get_secret())
+            # dict keys ['success','initialprice','price','high','low','volume','bid','ask']
+            tradeogre_json_result = api_tradeogre.ticker(self.crypto_pair.get_corrected_pair_for_exchange())
+            return tradeogre_json_result
+        elif exchange == 'kraken':
+            exchange_id = 'kraken'
+            self.crypto_pair.set_exchange(exchange_id)
+            exchange_class = getattr(ccxt, exchange_id)
+            exchange = exchange_class({
+                    'apiKey': self.exchange_keys[exchange_id].get_key(),
+                    'secret': self.exchange_keys[exchange_id].get_secret(),
+                'timeout': 30000,
+                'enableRateLimit': True,
+            })
+            exchange.verbose = False
+            # dict keys ['symbol', 'timestamp', 'datetime', 'high', 'low', 'bid', 'bidVolume', 'ask', 'askVolume', 'vwap',
+            # 'open', 'close', 'last', 'previousClose', 'percentage', 'average', 'baseVolume', 'quoteVolume',
+            # info
+            # ['a','b','c','v','p','t','l','h','o']
+            # Kraken can be sent multiple crypto combinations so if you want only one you have to send it as a list
+            kraken_dict_result = exchange.fetch_tickers([self.crypto_pair.get_corrected_pair_for_exchange()])  # 'BTC/USDT')
+            # print(list(depth.keys()))
+            return kraken_dict_result
+        else:
+            exchange_id = exchange
+            self.crypto_pair.set_exchange(exchange_id)
+            exchange_class = getattr(ccxt, exchange_id)
+            if exchange in list(self.exchange_keys.keys()):
                 exchange = exchange_class({
                     'apiKey': self.exchange_keys[exchange_id].get_key(),
                     'secret': self.exchange_keys[exchange_id].get_secret(),
                     'timeout': 30000,
                     'enableRateLimit': True,
                 })
-                exchange.verbose = False
-                # dict keys ['symbol', 'timestamp', 'datetime', 'high', 'low', 'bid', 'bidVolume', 'ask', 'askVolume', 'vwap',
-                # 'open', 'close', 'last', 'previousClose', 'change' ,'percentage', 'average', 'baseVolume', 'quoteVolume',
-                # info
-                # ['symbol','priceChange','priceChangePercent','weightedAvgPrice','prevClosePrice','lastPrice','lastQty','bidPrice',
-                # 'bidQty','askPrice','askQty','openPrice','hightPrice','lowPrice','volume','quoteVolume','openTime','closetime','firstId','lastId','count']
-                binance_dict_result = exchange.fetch_tickers(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
-                return binance_dict_result
-            elif exchange == 'bittrex':
-                exchange_id = exchange
-                self.crypto_pair.set_exchange(exchange_id)
-                exchange_class = getattr(ccxt, exchange_id)
-                exchange = exchange_class({
-                    #    'apiKey': self.exchange_keys[exchange_id].get_key(),
-                    #    'secret': self.exchange_keys[exchange_id].get_secret(),
-                    'timeout': 30000,
-                    'enableRateLimit': True,
-                })
-                exchange.verbose = False
-                # dict keys ['symbol','timestamp','datetime','high','low','bid','bidVolume','ask','askVolume',
-                # 'vwap','open','close','last','previousClose','change','percentage','average','baseVolume','quoteVolume']
-                # info
-                # ['symbol','lastTradeRate','bidRate','askRate']
-                bittrex_dict_result = exchange.fetch_tickers(self.crypto_pair.get_corrected_pair_for_exchange())  # 'BTC/USDT')
-                # print(list(depth.keys()))
-                return bittrex_dict_result
-            elif exchange == 'kraken':
-                exchange_id = 'kraken'
-                self.crypto_pair.set_exchange(exchange_id)
-                exchange_class = getattr(ccxt, exchange_id)
-                exchange = exchange_class({
-                        'apiKey': self.exchange_keys[exchange_id].get_key(),
-                        'secret': self.exchange_keys[exchange_id].get_secret(),
-                    'timeout': 30000,
-                    'enableRateLimit': True,
-                })
-                exchange.verbose = False
-                # dict keys ['symbol', 'timestamp', 'datetime', 'high', 'low', 'bid', 'bidVolume', 'ask', 'askVolume', 'vwap',
-                # 'open', 'close', 'last', 'previousClose', 'percentage', 'average', 'baseVolume', 'quoteVolume',
-                # info
-                # ['a','b','c','v','p','t','l','h','o']
-                # Kraken can be sent multiple crypto combinations so if you want only one you have to send it as a list
-                kraken_dict_result = exchange.fetch_tickers([self.crypto_pair.get_corrected_pair_for_exchange()])  # 'BTC/USDT')
-                # print(list(depth.keys()))
-                return kraken_dict_result
             else:
-                print("Exchange " + exhcange + " has not been properly added to ../classes/crypto_metrics.py")
-        else:
-            raise Exception(" Exchange " + exchange + " information is not present in the keys file: " + INPUTS_DIR + 'untitled.pyc')
+                exchange = exchange_class({
+                    'timeout': 30000,
+                    'enableRateLimit': True,
+                })
+            exchange.verbose = False
+            return exchange.fetch_tickers([self.crypto_pair.get_corrected_pair_for_exchange()])
 
 

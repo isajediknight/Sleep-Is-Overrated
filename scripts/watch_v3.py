@@ -71,13 +71,15 @@ from command_line_arguments import *
 from pseudothreading import *
 
 from tracking import *
+
+from pretty_formatting import *
 # < ---  End  Custom Classes Import --- >
 
 # Time all the things!
 runtime = Benchmark()
 
 # Text Coloration
-cc = ColoredText(['exchange'],['38;5;214m'])
+cc = ColoredText(['exchange','attention'],['38;5;214m','38;5;226m'])
 
 # Get parameters from commandline
 parameters = Parse()
@@ -98,8 +100,65 @@ main = parameters.get_parameter('-crypto-main').value
 alt = parameters.get_parameter('-crypto-alt').value
 
 data = Tracking(main,alt)
+format_diff_output = PrettyFormatting(5)
 
-for run_counter in range(0,2):
+# Do one run
+# Define threads to run
+# 'order book'
+thread1 = thread('kraken', main, alt, 'ticker')
+thread2 = thread('binance', main, alt, 'ticker');
+thread3 = thread('bittrex', main, alt, 'ticker');
+thread4 = thread('tradeogre', main, alt, 'ticker');
+thread5 = thread('poloniex', main, alt, 'ticker');
+
+# Run the threads!
+thread1.start()
+thread2.start()
+thread3.start()
+thread4.start()
+thread5.start()
+
+# Wait for all threads to finish
+thread1.join()
+thread2.join()
+thread3.join()
+thread4.join()
+thread5.join()
+
+timestamp = str(datetime.datetime.now().utcnow().timestamp())
+bid, ask, bid_volume, ask_volume = thread1.get_thread_results()
+data.add_ticker_results(timestamp,'kraken',bid,ask,bid_volume,ask_volume)
+
+bid, ask, bid_volume, ask_volume = thread2.get_thread_results()
+data.add_ticker_results(timestamp, 'binance', bid, ask, bid_volume, ask_volume)
+
+bid, ask, bid_volume, ask_volume = thread3.get_thread_results()
+data.add_ticker_results(timestamp, 'bittrex', bid, ask, bid_volume, ask_volume)
+
+bid, ask, bid_volume, ask_volume = thread4.get_thread_results()
+data.add_ticker_results(timestamp, 'tradeogre', bid, ask, bid_volume, ask_volume)
+
+bid, ask, bid_volume, ask_volume = thread5.get_thread_results()
+data.add_ticker_results(timestamp, 'poloniex', bid, ask, bid_volume, ask_volume)
+
+track_trending = {}
+track_trending['kraken'] = {}
+track_trending['binance'] = {}
+track_trending['bittrex'] = {}
+track_trending['tradeogre'] = {}
+track_trending['poloniex'] = {}
+track_trending['kraken']['bid'] = Trending()
+track_trending['kraken']['ask'] = Trending()
+track_trending['binance']['bid'] = Trending()
+track_trending['binance']['ask'] = Trending()
+track_trending['bittrex']['bid'] = Trending()
+track_trending['bittrex']['ask'] = Trending()
+track_trending['tradeogre']['bid'] = Trending()
+track_trending['tradeogre']['ask'] = Trending()
+track_trending['poloniex']['bid'] = Trending()
+track_trending['poloniex']['ask'] = Trending()
+
+for run_counter in range(0,30):
 
     # Define threads to run
     # 'order book'
@@ -107,18 +166,27 @@ for run_counter in range(0,2):
     thread2 = thread('binance', main, alt, 'ticker');
     thread3 = thread('bittrex', main, alt, 'ticker');
     thread4 = thread('tradeogre', main, alt, 'ticker');
+    thread5 = thread('poloniex', main, alt, 'ticker');
 
     # Run the threads!
     thread1.start()
     thread2.start()
     thread3.start()
     thread4.start()
+    thread5.start()
 
     # Wait for all threads to finish
     thread1.join()
     thread2.join()
     thread3.join()
     thread4.join()
+    thread5.join()
+
+    # OS Compatibility for importing Class Files
+    if ((OS_TYPE == 'linux') or (OS_TYPE == 'macintosh')):
+        os.system('clear')
+    elif ((OS_TYPE == 'windows')):
+        os.system('cls')
 
     timestamp = str(datetime.datetime.now().utcnow().timestamp())
     bid, ask, bid_volume, ask_volume = thread1.get_thread_results()
@@ -133,20 +201,116 @@ for run_counter in range(0,2):
     bid, ask, bid_volume, ask_volume = thread4.get_thread_results()
     data.add_ticker_results(timestamp, 'tradeogre', bid, ask, bid_volume, ask_volume)
 
-    temp = data.get_ticker()[timestamp]['binance'].get_bid()
-    print(temp+"\t"+thread1.get_elapsed_time().human_readable_string())
-    temp = data.get_ticker()[timestamp]['bittrex'].get_bid()
-    print(temp+"\t"+thread2.get_elapsed_time().human_readable_string())
-    temp = data.get_ticker()[timestamp]['tradeogre'].get_bid()
-    print(temp+"\t"+thread3.get_elapsed_time().human_readable_string())
-    temp = data.get_ticker()[timestamp]['kraken'].get_bid()
-    print(temp+"\t"+thread4.get_elapsed_time().human_readable_string())
-    print("")
+    bid, ask, bid_volume, ask_volume = thread5.get_thread_results()
+    data.add_ticker_results(timestamp, 'poloniex', bid, ask, bid_volume, ask_volume)
+
+    prev_timestamp = sorted(data.get_keys())[-2]
+    prev_results_bid = []
+    prev_results_bid.append(data.get_ticker()[prev_timestamp]['kraken'].get_bid() + "|kraken")
+    prev_results_bid.append(data.get_ticker()[prev_timestamp]['binance'].get_bid() + "|binance")
+    prev_results_bid.append(data.get_ticker()[prev_timestamp]['bittrex'].get_bid() + "|bittrex")
+    prev_results_bid.append(data.get_ticker()[prev_timestamp]['tradeogre'].get_bid() + "|tradeogre")
+    prev_results_bid.append(data.get_ticker()[prev_timestamp]['poloniex'].get_bid() + "|poloniex")
+
+    current_results_bid = []
+    current_results_bid.append(data.get_ticker()[timestamp]['kraken'].get_bid() + "|kraken")
+    current_results_bid.append(data.get_ticker()[timestamp]['binance'].get_bid() + "|binance")
+    current_results_bid.append(data.get_ticker()[timestamp]['bittrex'].get_bid() + "|bittrex")
+    current_results_bid.append(data.get_ticker()[timestamp]['tradeogre'].get_bid() + "|tradeogre")
+    current_results_bid.append(data.get_ticker()[timestamp]['poloniex'].get_bid() + "|poloniex")
+
+    prev_results_ask = []
+    prev_results_ask.append(data.get_ticker()[prev_timestamp]['kraken'].get_ask() + "|kraken")
+    prev_results_ask.append(data.get_ticker()[prev_timestamp]['binance'].get_ask() + "|binance")
+    prev_results_ask.append(data.get_ticker()[prev_timestamp]['bittrex'].get_ask() + "|bittrex")
+    prev_results_ask.append(data.get_ticker()[prev_timestamp]['tradeogre'].get_ask() + "|tradeogre")
+    prev_results_ask.append(data.get_ticker()[prev_timestamp]['poloniex'].get_ask() + "|poloniex")
+
+    current_results_ask = []
+    current_results_ask.append(data.get_ticker()[timestamp]['kraken'].get_ask() + "|kraken")
+    current_results_ask.append(data.get_ticker()[timestamp]['binance'].get_ask() + "|binance")
+    current_results_ask.append(data.get_ticker()[timestamp]['bittrex'].get_ask() + "|bittrex")
+    current_results_ask.append(data.get_ticker()[timestamp]['tradeogre'].get_ask() + "|tradeogre")
+    current_results_ask.append(data.get_ticker()[timestamp]['poloniex'].get_ask() + "|poloniex")
+
+    sorted_exchange_order_bid = []
+    sorted_price_order_bid = []
+    for exchange_order in sorted(current_results_bid):
+        sorted_exchange_order_bid.append(exchange_order.split("|")[1])
+        sorted_price_order_bid.append(exchange_order.split("|")[0])
+
+    sorted_exchange_order_ask = []
+    sorted_price_order_ask = []
+    for exchange_order in reversed(sorted(current_results_ask)):
+        sorted_exchange_order_ask.append(exchange_order.split("|")[1])
+        sorted_price_order_ask.append(exchange_order.split("|")[0])
+
+    print("\n Run: " + str(run_counter) + "\t\t\t\t" + alt + "\n")
+
+    print(" Buy:")
+    for exchange in sorted_exchange_order_ask:
+        old = data.get_ticker()[prev_timestamp][exchange].get_ask()
+        new = data.get_ticker()[timestamp][exchange].get_ask()
+        diff, color = format_diff_output.diff_two(old, new)
+        if exchange == 'kraken':
+            tab = "\t\t"
+        else:
+            tab = "\t"
+        message = " " + cc.cc(exchange, 'exchange') + tab + cc.cc(diff, color) + "\t" + new
+        track_trending[exchange]['ask'].compute_trend(color)
+        message += "\t" + cc.cc(str(track_trending[exchange]['ask'].get_cc_trend_count()),track_trending[exchange]['ask'].get_cc_color())
+        print(message)
+
+    print("\n Sell:")
+    for exchange in reversed(sorted_exchange_order_bid):
+        old = data.get_ticker()[prev_timestamp][exchange].get_bid()
+        new = data.get_ticker()[timestamp][exchange].get_bid()
+        diff, color = format_diff_output.diff_two(old, new)
+        if exchange == 'kraken':
+            tab = "\t\t"
+        else:
+            tab = "\t"
+        message = " " + cc.cc(exchange, 'exchange') + tab + cc.cc(diff, color) + "\t" + new
+        track_trending[exchange]['bid'].compute_trend(color)
+        message += "\t" + cc.cc(str(track_trending[exchange]['bid'].get_cc_trend_count()),track_trending[exchange]['bid'].get_cc_color())
+        print(message)
+
+    #print("\n " + cc.cc(sorted_exchange_order_bid[-1],'exchange')  + " "+ str(sorted_price_order_bid[-1]))
+    #print( " > " + cc.cc(sorted_exchange_order_ask[-1],'exchange')  + " "+ str(sorted_price_order_ask[-1]))
+    #print( " = " + str(float(sorted_price_order_bid[-1]) > float(sorted_price_order_ask[-1])))
+    #                           sell                               buy
+    if float(sorted_price_order_bid[-1]) > float(sorted_price_order_ask[-1]):
+        print("\n")
+        print(cc.cc(" Arbitrage Detected!",'attention'))
+        my_string = ""
+        sell_exchange = sorted_exchange_order_bid[-1]
+        buy_exchange = sorted_exchange_order_ask[-1]
+        print("\n Buy:")
+        print(" " + cc.cc(buy_exchange,'exchange') + "   \t\t" + sorted_price_order_ask[-1] + "\n")
+        print(" Sell:")
+        counter = 0
+        for bid in sorted_price_order_bid:
+            if sorted_price_order_bid[-1] == bid:
+                print(" " + cc.cc(sorted_exchange_order_bid[counter], 'exchange') + "   \t\t" + bid)
+            counter += 1
+        diff, color = format_diff_output.diff_two(sorted_price_order_ask[-1], sorted_price_order_bid[-1])
+        print("\n Profit: \t\t     " + cc.cc(diff, color))
+
+    #temp = data.get_ticker()[timestamp]['binance'].get_bid()
+    #print(temp+"\t"+thread1.get_elapsed_time().human_readable_string())
+    #temp = data.get_ticker()[timestamp]['bittrex'].get_bid()
+    #print(temp+"\t"+thread2.get_elapsed_time().human_readable_string())
+    #temp = data.get_ticker()[timestamp]['tradeogre'].get_bid()
+    #print(temp+"\t"+thread3.get_elapsed_time().human_readable_string())
+    #temp = data.get_ticker()[timestamp]['kraken'].get_bid()
+    #print(temp+"\t"+thread4.get_elapsed_time().human_readable_string())
+    #print("")
 
     del thread1
     del thread2
     del thread3
     del thread4
+    del thread5
 
 #print(cc.cc("Kraken:",'exchange'))
 #print(str(thread1.get_thread_results())+"\n")
@@ -158,4 +322,4 @@ for run_counter in range(0,2):
 #print(str(thread4.get_thread_results())+"\n")
 
 runtime.stop()
-print(" Program Runtime: " + runtime.human_readable_string())
+print("\n Program Runtime: " + runtime.human_readable_string())

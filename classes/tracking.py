@@ -59,3 +59,25 @@ class Ticker:
     def get_ask_volume(self):
         return self.ask_volume
 
+class Trending:
+    def __init__(self,up_color='green',down_color='red',no_change='grey'):
+        self.up_color = up_color
+        self.down_color = down_color
+        self.no_change = no_change
+        self.trend_count = 0
+        self.current_color = no_change
+
+    def compute_trend(self,color='grey'):
+        if self.current_color != self.no_change and color == self.no_change:
+            pass
+        elif self.current_color == color:
+            self.trend_count += 1
+        else:
+            self.trend_count = 0
+            self.current_color = color
+
+    def get_cc_trend_count(self):
+        return self.trend_count
+
+    def get_cc_color(self):
+        return self.current_color

@@ -17,31 +17,49 @@ class CryptoPairs:
     def set_alt(self,alt):
         self.alt = alt
 
+    # Do not support XHV, RYO
+    # binance
+    # bittrex
+    # kraken
+
+    # Do Not support ETC
+    # tradeogre
+
     def get_corrected_pair_for_exchange(self):
         if self.exchange == 'tradeogre':
             if self.main == 'BTC' and self.alt == 'DOGE':
                 return 'BTC-DOGE'
             elif self.main == 'BTC' and self.alt == 'RYO':
                 return 'BTC-RYO'
-            else:
-                raise Exception(" No pair defined for " + self.exchange + " with " + self.main + " and " + self.alt)
-        elif self.exchange == 'binance':
-            if self.main == 'BTC' and self.alt == 'DOGE':
-                return 'DOGE/BTC'
-            else:
-                raise Exception(" No pair defined for " + self.exchange + " with " + self.main + " and " + self.alt)
-        elif self.exchange == 'kraken':
-            if self.main == 'BTC' and self.alt == 'DOGE':
-                return 'DOGE/BTC'
-            else:
-                raise Exception(" No pair defined for " + self.exchange + " with " + self.main + " and " + self.alt)
-        elif self.exchange == 'bittrex':
-            if self.main == 'BTC' and self.alt == 'DOGE':
-                return 'DOGE/BTC'
+            elif self.main == 'BTC' and self.alt == 'XMR':
+                return 'BTC-XMR'
+            elif self.main == 'BTC' and self.alt == 'ETH':
+                return 'BTC-ETH'
+            elif self.main == 'BTC' and self.alt == 'LTC':
+                return 'BTC-LTC'
+            elif self.main == 'BTC' and self.alt == 'XHV':
+                return 'BTC-XHV'
+            elif self.main == 'BTC' and self.alt == 'DASH':
+                return 'BTC-DASH'
             else:
                 raise Exception(" No pair defined for " + self.exchange + " with " + self.main + " and " + self.alt)
         else:
-            raise Exception(" Exchange " + self.exchange + " is not currently supported")
+            if self.main == 'BTC' and self.alt == 'DOGE':
+                return 'DOGE/BTC'
+            elif self.main == 'BTC' and self.alt == 'XMR':
+                return 'XMR/BTC'
+            elif self.main == 'BTC' and self.alt == 'ETH':
+                return 'ETH/BTC'
+            elif self.main == 'BTC' and self.alt == 'LTC':
+                return 'LTC/BTC'
+            elif self.main == 'BTC' and self.alt == 'ETC':
+                return 'ETC/BTC'
+            elif self.main == 'BTC' and self.alt == 'DASH':
+                return 'DASH/BTC'
+            #elif self.main == 'BTC' and self.alt == 'XHV':
+            #    return 'XHV/BTC'
+            else:
+                raise Exception(" No pair defined for " + self.exchange + " with " + self.main + " and " + self.alt)
 
     def get_corrected_pair(self,exchange='tradeogre'):
         """
@@ -52,28 +70,34 @@ class CryptoPairs:
                 return 'BTC-DOGE'
             elif self.main == 'BTC' and self.alt == 'RYO':
                 return 'BTC-RYO'
-            else:
-                raise Exception(" No pair defined for " + exchange + " with " + self.main + " and " + self.alt)
-        elif exchange == 'binance':
-            if self.main == 'BTC' and self.alt == 'DOGE':
-                return 'DOGE/BTC'
-            else:
-                raise Exception(" No pair defined for " + exchange + " with " + self.main + " and " + self.alt)
-        elif exchange == 'kraken':
-            if self.main == 'BTC' and self.alt == 'DOGE':
-                return 'DOGE/BTC'
-            else:
-                raise Exception(" No pair defined for " + exchange + " with " + self.main + " and " + self.alt)
-        elif exchange == 'bittrex':
-            if self.main == 'BTC' and self.alt == 'DOGE':
-                return 'DOGE/BTC'
+            elif self.main == 'BTC' and self.alt == 'XMR':
+                return 'BTC-XMR'
+            elif self.main == 'BTC' and self.alt == 'ETH':
+                return 'BTC-ETH'
+            elif self.main == 'BTC' and self.alt == 'LTC':
+                return 'BTC-LTC'
+            elif self.main == 'BTC' and self.alt == 'XHV':
+                return 'BTC-XHV'
+            elif self.main == 'BTC' and self.alt == 'DASH':
+                return 'BTC-DASH'
             else:
                 raise Exception(" No pair defined for " + exchange + " with " + self.main + " and " + self.alt)
         else:
-            raise Exception(" Exchange " + exchange + " is not currently supported")
+            if self.main == 'BTC' and self.alt == 'DOGE':
+                return 'DOGE/BTC'
+            elif self.main == 'BTC' and self.alt == 'XMR':
+                return 'XMR/BTC'
+            elif self.main == 'BTC' and self.alt == 'ETH':
+                return 'ETH/BTC'
+            elif self.main == 'BTC' and self.alt == 'LTC':
+                return 'LTC/BTC'
+            elif self.main == 'BTC' and self.alt == 'ETC':
+                return 'ETC/BTC'
+            elif self.main == 'BTC' and self.alt == 'DASH':
+                return 'DASH/BTC'
 
     def supported_exchange(self,exchange):
-        return exchange.lower() in ['tradeogre','binance','kraken','bittrex']
+        return exchange.lower() in ['tradeogre','binance','kraken','bittrex','poloniex']
 
     def supported_crypto_main(self,main):
         return main.upper() in ['BTC']
