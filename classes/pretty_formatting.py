@@ -61,3 +61,5 @@ class PrettyFormatting:
         diff = abs(diff)
 
         return self.add_spaces(diff) + str(diff), cc_color
+
+        
