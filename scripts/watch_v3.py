@@ -158,7 +158,7 @@ track_trending['tradeogre']['ask'] = Trending()
 track_trending['poloniex']['bid'] = Trending()
 track_trending['poloniex']['ask'] = Trending()
 
-for run_counter in range(0,30):
+for run_counter in range(0,4):
 
     # Define threads to run
     # 'order book'
@@ -245,7 +245,7 @@ for run_counter in range(0,30):
         sorted_exchange_order_ask.append(exchange_order.split("|")[1])
         sorted_price_order_ask.append(exchange_order.split("|")[0])
 
-    print("\n Run: " + str(run_counter) + "\t\t\t\t" + alt + "\n")
+    print("\n Run: " + str(run_counter) + " / "+str(50)+"\t\t\t\t" + alt + "\n")
 
     print(" Buy:")
     for exchange in sorted_exchange_order_ask:
@@ -257,8 +257,11 @@ for run_counter in range(0,30):
         else:
             tab = "\t"
         message = " " + cc.cc(exchange, 'exchange') + tab + cc.cc(diff, color) + "\t" + new
-        track_trending[exchange]['ask'].compute_trend(color)
-        message += "\t" + cc.cc(str(track_trending[exchange]['ask'].get_cc_trend_count()),track_trending[exchange]['ask'].get_cc_color())
+        track_trending[exchange]['ask'].compute_trend(color,int(diff))
+        message += format_diff_output.add_spaces(track_trending[exchange]['ask'].get_cc_trend_count())
+        message += " " + cc.cc(str(track_trending[exchange]['ask'].get_cc_trend_count()),track_trending[exchange]['ask'].get_cc_color())
+        message += " " + format_diff_output.add_spaces(track_trending[exchange]['ask'].get_cc_direction_total())
+        message += cc.cc(str(track_trending[exchange]['ask'].get_cc_direction_total()),track_trending[exchange]['ask'].get_cc_color())
         print(message)
 
     print("\n Sell:")
@@ -271,8 +274,11 @@ for run_counter in range(0,30):
         else:
             tab = "\t"
         message = " " + cc.cc(exchange, 'exchange') + tab + cc.cc(diff, color) + "\t" + new
-        track_trending[exchange]['bid'].compute_trend(color)
-        message += "\t" + cc.cc(str(track_trending[exchange]['bid'].get_cc_trend_count()),track_trending[exchange]['bid'].get_cc_color())
+        track_trending[exchange]['bid'].compute_trend(color,int(diff))
+        message += format_diff_output.add_spaces(track_trending[exchange]['bid'].get_cc_trend_count())
+        message += " " + cc.cc(str(track_trending[exchange]['bid'].get_cc_trend_count()),track_trending[exchange]['bid'].get_cc_color())
+        message += " " + format_diff_output.add_spaces(track_trending[exchange]['bid'].get_cc_direction_total())
+        message += cc.cc(str(track_trending[exchange]['bid'].get_cc_direction_total()),track_trending[exchange]['bid'].get_cc_color())
         print(message)
 
     #print("\n " + cc.cc(sorted_exchange_order_bid[-1],'exchange')  + " "+ str(sorted_price_order_bid[-1]))
