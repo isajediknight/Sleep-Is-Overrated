@@ -66,18 +66,38 @@ class Trending:
         self.no_change = no_change
         self.trend_count = 0
         self.current_color = no_change
+        self.direction_total = 0
 
-    def compute_trend(self,color='grey'):
-        if self.current_color != self.no_change and color == self.no_change:
-            pass
-        elif self.current_color == color:
+    def compute_trend(self,color,change):
+
+
+        if self.current_color == color and self.up_color == color:
+            self.direction_total += change
             self.trend_count += 1
-        else:
+        elif self.current_color == color and self.down_color == color:
+            self.direction_total += change
+            self.trend_count += 1
+        elif self.current_color == color and self.no_change == color:
+            self.trend_count += 1
+
+        if self.current_color != color and self.no_change != color:
             self.trend_count = 0
             self.current_color = color
+            self.direction_total = change
+
+        #if self.current_color != self.no_change and color == self.no_change:
+        #    pass
+        #elif self.current_color == color:
+        #    self.trend_count += 1
+        #else:
+        #    self.trend_count = 0
+        #    self.current_color = color
 
     def get_cc_trend_count(self):
         return self.trend_count
 
     def get_cc_color(self):
         return self.current_color
+
+    def get_cc_direction_total(self):
+        return self.direction_total
