@@ -9,8 +9,6 @@ class Tracking:
         """
         Save the results
         """
-
-
         #if exchange == 'tradeogre':
         #    this_ticker[exchange] = Ticker(timestamp, exchange, bid, ask, bid_volume, ask_volume)
         #    self.ticker[timestamp] = this_ticker[exchange]
@@ -59,6 +57,20 @@ class Ticker:
     def get_ask_volume(self):
         return self.ask_volume
 
+class OrderBook:
+    def __init__(self,selling,buying):
+        self.selling = selling
+        self.buying = buying
+
+    def get_cheapest_buy(self):
+        #      Amount        Price
+        return self.buying[0][1] ,format(self.buying[0][0],'.8f')
+
+    def get_costliest_sell(self):
+        #      Amount        Price
+        return self.selling[0][1] ,format(self.selling[0][0],'.8f')
+
+
 class Trending:
     def __init__(self,up_color='green',down_color='red',no_change='grey'):
         self.up_color = up_color
@@ -84,14 +96,6 @@ class Trending:
             self.trend_count = 0
             self.current_color = color
             self.direction_total = change
-
-        #if self.current_color != self.no_change and color == self.no_change:
-        #    pass
-        #elif self.current_color == color:
-        #    self.trend_count += 1
-        #else:
-        #    self.trend_count = 0
-        #    self.current_color = color
 
     def get_cc_trend_count(self):
         return self.trend_count
