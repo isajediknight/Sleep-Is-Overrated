@@ -106,7 +106,7 @@ class thread(threading.Thread):
         if self.api_call_type == 'order book':
 
             if self.exchange == 'tradeogre':
-                buying, selling = master.call_order_book('tradeogre')
+                selling, buying = master.call_order_book('tradeogre')
 
                 self.buy_total = float(0)
                 for key in list(buying.keys()):
@@ -193,6 +193,16 @@ class thread(threading.Thread):
                 ask_volume = self.thread_results[self.exchange]['askVolume']
 
             return bid,ask,bid_volume,ask_volume
+
+        elif self.api_call_type == 'order book':
+
+            print(self.thread_results[self.exchange])
+
+            if self.exchange == 'tradeogre':
+                return self.thread_results[self.exchange]['buy'], self.thread_results[self.exchange]['sell']
+
+            else:
+                return list(self.thread_results[self.exchange]['bids']), list(self.thread_results[self.exchange]['asks'])
 
         else:
             return self.thread_results

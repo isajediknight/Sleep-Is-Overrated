@@ -3,7 +3,7 @@ class Tracking:
         self.main = main
         self.alt = alt
 
-        self.ticker = {}
+        self.object = {}
 
     def add_ticker_results(self,timestamp,exchange,bid,ask,bid_volume,ask_volume):
         """
@@ -11,21 +11,32 @@ class Tracking:
         """
         #if exchange == 'tradeogre':
         #    this_ticker[exchange] = Ticker(timestamp, exchange, bid, ask, bid_volume, ask_volume)
-        #    self.ticker[timestamp] = this_ticker[exchange]
+        #    self.object[timestamp] = this_ticker[exchange]
         #else:
         this_ticker = {}
         this_ticker[exchange] = Ticker(timestamp,exchange,bid,ask,bid_volume,ask_volume)
-        if timestamp not in list(self.ticker.keys()):
-            self.ticker[timestamp] = {}
+        if timestamp not in list(self.object.keys()):
+            self.object[timestamp] = {}
 
-        self.ticker[timestamp][exchange] = this_ticker[exchange]
-        #self.ticker[timestamp][exchange] = Ticker(timestamp,exchange,bid,ask,bid_volume,ask_volume)
+        self.object[timestamp][exchange] = this_ticker[exchange]
+        #self.object[timestamp][exchange] = Ticker(timestamp,exchange,bid,ask,bid_volume,ask_volume)
+
+    def add_order_book_results(self,timestamp,exchange,buying,selling):
+        this_order_book = {}
+        this_order_book[exchange] = OrderBook(timestamp,exchange,buying,selling)
+        if timestamp not in list(self.object.keys()):
+            self.object[timestamp] = {}
+
+        self.object[timestamp][exchange] = this_order_book[exchange]
 
     def get_keys(self):
-        return list(self.ticker.keys())
+        return list(self.object.keys())
 
     def get_ticker(self):
-        return self.ticker
+        return self.object
+
+    def get_object(self):
+        return self.object
 
 class Ticker:
     def __init__(self,timestamp,exchange,bid,ask,bid_volume,ask_volume):
@@ -63,11 +74,11 @@ class OrderBook:
         self.buying = buying
 
     def get_cheapest_buy(self):
-        #      Amount        Price
+        #      Amount             Price
         return self.buying[0][1] ,format(self.buying[0][0],'.8f')
 
     def get_costliest_sell(self):
-        #      Amount        Price
+        #      Amount              Price
         return self.selling[0][1] ,format(self.selling[0][0],'.8f')
 
 
