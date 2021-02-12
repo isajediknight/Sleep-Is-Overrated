@@ -69,9 +69,11 @@ class Ticker:
         return self.ask_volume
 
 class OrderBook:
-    def __init__(self,selling,buying):
+    def __init__(self,timestamp,exchange,selling,buying):
         self.selling = selling
         self.buying = buying
+        self.timestamp = timestamp
+        self.exchange = exchange
 
     def get_cheapest_buy(self):
         #      Amount             Price

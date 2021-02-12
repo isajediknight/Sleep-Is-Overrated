@@ -80,7 +80,10 @@ class thread(threading.Thread):
         self.alt = alt.upper()
         self.api_call_type = api_call_type.lower()
 
-        self.crypto_pair = CryptoPairs('tradeogre', main, alt)
+        self.buy_total = float(0)
+        self.sell_total = float(0)
+
+        self.crypto_pair = CryptoPairs(exchange, main, alt)
 
         # Read in exchanges and API keys
         self.exchange_keys = {}
@@ -108,55 +111,39 @@ class thread(threading.Thread):
             if self.exchange == 'tradeogre':
                 selling, buying = master.call_order_book('tradeogre')
 
-                self.buy_total = float(0)
-                for key in list(buying.keys()):
+                for key in list(buying):
                     self.buy_total += float(buying[key])
 
-                self.sell_total = float(0)
-                for key in list(selling.keys()):
+                for key in list(selling):
                     self.sell_total += float(selling[key])
 
-                # Debugging
-                #print("TradeOgre")
-                #print("Buying: " + str(self.buy_total))
-                #print("Selling: " + str(self.sell_total))
-
                 # Save this data to return it
-                self.thread_results[self.exchange] =  (self.buy_total, self.sell_total)
+                self.thread_results[self.exchange] =  buying, selling
 
             elif self.exchange == 'kraken':
 
                 buying, selling = master.call_order_book('kraken')
 
-                self.buy_total = float(0)
-                for price, total, unknown in buying:
+                for price, unknown, total in buying:
                     self.buy_total += float(total)
 
-                self.sell_total = float(0)
-                for price, total, unknown in selling:
+                for price, unknown, total in selling:
                     self.sell_total += float(total)
 
-                # Debugging
-                #print("Kraken")
-                #print("Buying: " + str(self.buy_total))
-                #print("Selling: " + str(self.sell_total))
-
                 # Save this data to return it
-                self.thread_results[self.exchange] =  (self.buy_total, self.sell_total)
+                self.thread_results[self.exchange] =  buying, selling
 
             else:
                 buying, selling = master.call_order_book(self.exchange)
 
-                self.buy_total = float(0)
                 for price, total in buying:
                     self.buy_total += float(total)
 
-                self.sell_total = float(0)
                 for price, total in selling:
                     self.sell_total += float(total)
 
                 # Save this data to return it
-                self.thread_results[self.exchange] =  (self.buy_total, self.sell_total)
+                self.thread_results[self.exchange] =  buying, selling
 
         elif self.api_call_type == 'ticker':
 
@@ -196,13 +183,15 @@ class thread(threading.Thread):
 
         elif self.api_call_type == 'order book':
 
-            print(self.thread_results[self.exchange])
-
             if self.exchange == 'tradeogre':
-                return self.thread_results[self.exchange]['buy'], self.thread_results[self.exchange]['sell']
+
+                print(self.thread_results[self.exchange][0])
+                print(self.thread_results[self.exchange][1])
+
+                return self.thread_results[self.exchange][0], self.thread_results[self.exchange][1]
 
             else:
-                return list(self.thread_results[self.exchange]['bids']), list(self.thread_results[self.exchange]['asks'])
+                return self.thread_results[self.exchange][0], self.thread_results[self.exchange][1]
 
         else:
             return self.thread_results
@@ -212,3 +201,9 @@ class thread(threading.Thread):
         Return the Benchmark object
         """
         return self.runtime
+
+    def get_buy_total(self):
+        return self.buy_total
+
+    def get_sell_total(self):
+        return self.sell_total
