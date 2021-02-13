@@ -76,12 +76,20 @@ class OrderBook:
         self.exchange = exchange
 
     def get_cheapest_buy(self):
-        #      Amount             Price
-        return self.buying[0][1] ,format(self.buying[0][0],'.8f')
+
+        if self.exchange == 'tradeogre':
+            return self.buying[0][1] ,self.buying[0][0]
+        else:
+            #      Amount             Price
+            return self.buying[0][1] ,format(self.buying[0][0],'.8f')
 
     def get_costliest_sell(self):
-        #      Amount              Price
-        return self.selling[0][1] ,format(self.selling[0][0],'.8f')
+
+        if self.exchange == 'tradeogre':
+            return self.selling[0][1], self.selling[0][0]
+        else:
+            #      Amount              Price
+            return self.selling[0][1] ,format(self.selling[0][0],'.8f')
 
 
 class Trending:

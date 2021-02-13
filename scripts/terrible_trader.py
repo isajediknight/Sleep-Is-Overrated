@@ -100,7 +100,7 @@ main = parameters.get_parameter('-crypto-main').value
 alt = parameters.get_parameter('-crypto-alt').value
 
 data = Tracking(main,alt)
-format_diff_output = PrettyFormatting(5)
+pf = PrettyFormatting(18)
 
 # Do one run
 # Define threads to run
@@ -143,15 +143,39 @@ data.add_order_book_results(timestamp, 'poloniex', buying, selling)#, thread5.ge
 
 print(" Buying:")
 amount, price = data.get_object()[timestamp]['kraken'].get_cheapest_buy()
-print(" " + cc.cc('kraken','exchange') + "\t\t" + str(amount) + "\t" + price)
+amount = int(amount)
+print(" " + cc.cc('kraken','exchange') + "\t\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
 amount, price = data.get_object()[timestamp]['binance'].get_cheapest_buy()
-print(" " + cc.cc('binance','exchange') + "\t" + str(amount) + "\t" + price)
+amount = int(amount)
+print(" " + cc.cc('binance','exchange') + "\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
 amount, price = data.get_object()[timestamp]['bittrex'].get_cheapest_buy()
-print(" " + cc.cc('bittrex','exchange') + "\t" + str(amount) + "\t" + price)
+amount = int(amount)
+print(" " + cc.cc('bittrex','exchange') + "\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
 amount, price = data.get_object()[timestamp]['tradeogre'].get_cheapest_buy()
-print(" " + cc.cc('tradeogre','exchange') + "\t" + str(amount) + "\t" + price)
+stupid = str(amount).find('.')
+amount = int(str(amount)[:stupid])
+print(" " + cc.cc('tradeogre','exchange') + "\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
 amount, price = data.get_object()[timestamp]['poloniex'].get_cheapest_buy()
-print(" " + cc.cc('poloniex','exchange') + "\t" + str(amount) + "\t" + price)
+amount = int(amount)
+print(" " + cc.cc('poloniex','exchange') + "\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
+
+print("\n Selling:")
+amount, price = data.get_object()[timestamp]['kraken'].get_costliest_sell()
+amount = int(amount)
+print(" " + cc.cc('kraken','exchange') + "\t\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
+amount, price = data.get_object()[timestamp]['binance'].get_costliest_sell()
+amount = int(amount)
+print(" " + cc.cc('binance','exchange') + "\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
+amount, price = data.get_object()[timestamp]['bittrex'].get_costliest_sell()
+amount = int(amount)
+print(" " + cc.cc('bittrex','exchange') + "\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
+amount, price = data.get_object()[timestamp]['tradeogre'].get_costliest_sell()
+stupid = str(amount).find('.')
+amount = int(str(amount)[:stupid])
+print(" " + cc.cc('tradeogre','exchange') + "\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
+amount, price = data.get_object()[timestamp]['poloniex'].get_costliest_sell()
+amount = int(amount)
+print(" " + cc.cc('poloniex','exchange') + "\t" + pf.add_spaces(amount) + str(amount) + "\t" + price)
 
 runtime.stop()
 print("\n Program Runtime: " + runtime.human_readable_string())

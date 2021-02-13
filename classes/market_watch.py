@@ -185,10 +185,15 @@ class thread(threading.Thread):
 
             if self.exchange == 'tradeogre':
 
-                print(self.thread_results[self.exchange][0])
-                print(self.thread_results[self.exchange][1])
+                buy = []
+                for key in list(sorted(self.thread_results[self.exchange][0])):
+                    buy.append([key,self.thread_results[self.exchange][0][key]])
 
-                return self.thread_results[self.exchange][0], self.thread_results[self.exchange][1]
+                sell = []
+                for key in list(reversed(self.thread_results[self.exchange][1])):
+                    sell.append([key,self.thread_results[self.exchange][1][key]])
+
+                return sell, buy
 
             else:
                 return self.thread_results[self.exchange][0], self.thread_results[self.exchange][1]
