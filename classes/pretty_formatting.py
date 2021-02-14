@@ -24,6 +24,37 @@ class PrettyFormatting:
         else:
             return ""
 
+    def middle_zero(self,number):
+        """
+        Aligns the '.' to be in the middle of self.total_spaces
+
+        ie:
+               123.456789
+                 0.032324
+          32113123.777
+                 3.00000002
+        """
+
+        if type(number) == type(0):
+            before_decimal = self.total_spaces - len(str(number))
+            after_decimal = 0
+            return " " * before_decimal + str(number)
+        else:
+            zero_loc = str(number).find('.')
+            before_decimal = int(self.total_spaces) - zero_loc
+            # make this 8 because 8 is the numbers zeros BTC goes down to
+            after_decimal = 9 - len(str(number)[zero_loc:])#int(self.total_spaces / 2) - (zero_loc + 1)
+            # if not divisible by 2 then add it to the after_decimal so it is not lost
+            if self.total_spaces % 2 != 0:
+                after_decimal += 1
+
+            message = " " * before_decimal
+            message += str(int(float(number)))
+            message += str(number)[zero_loc:]
+            message += after_decimal * " "
+
+            return message
+
     def diff_two(self,old,new):
         """
         Returns a ColoredText object as a string with correct text color

@@ -1,9 +1,18 @@
+from custom_colors import *
+from pretty_formatting import *
+
 class Tracking:
-    def __init__(self,main='BTC',alt='DOGE'):
+    def __init__(self,main='BTC',alt='DOGE',colored_keys=['exchange','attention'],colored_colors=['38;5;214m','38;5;226m']):
+        # main crypto
         self.main = main
+        # shitcoin
         self.alt = alt
 
+        # Our dictionary of results
         self.object = {}
+
+        # Text Coloration
+        self.cc = ColoredText(colored_keys, colored_colors)
 
     def add_ticker_results(self,timestamp,exchange,bid,ask,bid_volume,ask_volume):
         """
@@ -28,6 +37,123 @@ class Tracking:
             self.object[timestamp] = {}
 
         self.object[timestamp][exchange] = this_order_book[exchange]
+
+    def compare_previous_order_book(self):
+
+        timestamps = sorted(list(self.object.keys()))
+
+        if len(timestamps) < 2:
+            raise Exception("Only one data point exists please add another data point")
+
+        # Current Timestamp of Data
+        current_timestamp = timestamps[-1]
+        # Previous Timestamp of Data
+        previous_timestamp = timestamps[-2]
+        # If an API call fails we won't have the same number of exchanges in both Timestamps - this will make us only compare where we have data for both exchanges
+        exchange_intersection = sorted(list(set(list(self.object[current_timestamp].keys())).intersection(set(list(self.object[previous_timestamp].keys())))))
+
+        # Current buy data points
+        current_buy_prices = []
+        current_buy_amounts = []
+        current_buy_exchanges = []
+        # Current sell data points
+        current_sell_prices = []
+        current_sell_amounts = []
+        current_sell_exchanges = []
+
+        # Pull data out to be sorted
+        unsorted_buy_data_point = []
+        unsorted_sell_data_point = []
+        for exchange in exchange_intersection:
+            buy_price = self.object[current_timestamp][exchange].get_cheapest_buy()[1]
+            buy_amount = self.object[current_timestamp][exchange].get_cheapest_buy()[0]
+            sell_price = self.object[current_timestamp][exchange].get_costliest_sell()[1]
+            sell_amount = self.object[current_timestamp][exchange].get_costliest_sell()[0]
+            unsorted_buy_data_point.append(buy_price + "|" + str(buy_amount) + "|" + exchange)
+            unsorted_sell_data_point.append(sell_price + "|" + str(sell_amount) + "|" + exchange)
+
+        # sort the data and record it
+        for data in reversed(sorted(unsorted_buy_data_point)):
+            price, amount, exchange = data.split("|")
+            current_buy_prices.append(price)
+            current_buy_amounts.append(amount)
+            current_buy_exchanges.append(exchange)
+
+        # sort the data and record it
+        for data in sorted(unsorted_sell_data_point):
+            price, amount, exchange = data.split("|")
+            current_sell_prices.append(price)
+            current_sell_amounts.append(amount)
+            current_sell_exchanges.append(exchange)
+
+        # previous buy data points
+        previous_buy_prices = []
+        previous_buy_amounts = []
+        previous_buy_exchanges = []
+        # previous sell data points
+        previous_sell_prices = []
+        previous_sell_amounts = []
+        previous_sell_exchanges = []
+
+        # Pull data out to be sorted
+        unsorted_buy_data_point = []
+        unsorted_sell_data_point = []
+        for exchange in exchange_intersection:
+            buy_price = self.object[previous_timestamp][exchange].get_cheapest_buy()[1]
+            buy_amount = self.object[previous_timestamp][exchange].get_cheapest_buy()[0]
+            sell_price = self.object[previous_timestamp][exchange].get_costliest_sell()[1]
+            sell_amount = self.object[previous_timestamp][exchange].get_costliest_sell()[0]
+            unsorted_buy_data_point.append(buy_price + "|" + str(buy_amount) + "|" + exchange)
+            unsorted_sell_data_point.append(sell_price + "|" + str(sell_amount) + "|" + exchange)
+
+        # sort the data and record it
+        for data in reversed(sorted(unsorted_buy_data_point)):
+            price, amount, exchange = data.split("|")
+            previous_buy_prices.append(price)
+            previous_buy_amounts.append(amount)
+            previous_buy_exchanges.append(exchange)
+
+        # sort the data and record it
+        for data in sorted(unsorted_sell_data_point):
+            price, amount, exchange = data.split("|")
+            previous_sell_prices.append(price)
+            previous_sell_amounts.append(amount)
+            previous_sell_exchanges.append(exchange)
+
+        #print(str(current_buy_amounts[-1]))
+        dot_loc = str(current_buy_amounts[-1]).find('.')
+        pf = PrettyFormatting(9)#dot_loc)
+        btc_price = PrettyFormatting(2)
+
+        print("\n Buying:")
+        for i in range(len(current_buy_prices)):
+            message = ""
+            tab = "\t"
+            if current_buy_exchanges[i] == 'kraken':
+                tab += "\t"
+
+            message += " " + self.cc.cc(current_buy_exchanges[i],'exchange')
+            message += tab + pf.middle_zero(current_buy_amounts[i])
+            message += " " + btc_price.middle_zero(current_buy_prices[i])
+            diff, color = pf.diff_two(self.object[previous_timestamp][current_buy_exchanges[i]].get_cheapest_buy()[1],current_buy_prices[i])
+            message += " " + self.cc.cc(diff,color)
+
+            print(message)
+
+        print("\n Selling:")
+        for i in range(len(current_sell_prices)):
+            message = ""
+            tab = "\t"
+            if current_sell_exchanges[i] == 'kraken':
+                tab += "\t"
+
+            message += " " + self.cc.cc(current_sell_exchanges[i], 'exchange')
+            message += tab + pf.middle_zero(current_sell_amounts[i])
+            message += " " + btc_price.middle_zero(current_sell_prices[i])
+            diff, color = pf.diff_two(self.object[previous_timestamp][current_sell_exchanges[i]].get_costliest_sell()[1], current_sell_prices[i])
+            message += " " + self.cc.cc(diff, color)
+
+            print(message)
 
     def get_keys(self):
         return list(self.object.keys())
@@ -91,7 +217,6 @@ class OrderBook:
             #      Amount              Price
             return self.selling[0][1] ,format(self.selling[0][0],'.8f')
 
-
 class Trending:
     def __init__(self,up_color='green',down_color='red',no_change='grey'):
         self.up_color = up_color
@@ -102,7 +227,6 @@ class Trending:
         self.direction_total = 0
 
     def compute_trend(self,color,change):
-
 
         if self.current_color == color and self.up_color == color:
             self.direction_total += change
