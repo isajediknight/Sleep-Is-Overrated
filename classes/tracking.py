@@ -125,7 +125,7 @@ class Tracking:
         pf = PrettyFormatting(9)#dot_loc)
         btc_price = PrettyFormatting(2)
 
-        print("\n Buying:")
+        print("\n Buying:\t\t\t\t\t\t" + self.alt)
         for i in range(len(current_buy_prices)):
             message = ""
             tab = "\t"
