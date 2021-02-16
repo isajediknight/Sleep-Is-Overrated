@@ -14,6 +14,8 @@ class Tracking:
         # Text Coloration
         self.cc = ColoredText(colored_keys, colored_colors)
 
+        self.previous_order_book_exchanges = []
+
     def add_ticker_results(self,timestamp,exchange,bid,ask,bid_volume,ask_volume):
         """
         Save the results
@@ -125,7 +127,7 @@ class Tracking:
         pf = PrettyFormatting(9)#dot_loc)
         btc_price = PrettyFormatting(2)
 
-        print("\n Buying:\t\t\t\t\t\t" + self.alt)
+        print("\n Buying:")
         for i in range(len(current_buy_prices)):
             message = ""
             tab = "\t"
@@ -141,7 +143,7 @@ class Tracking:
             print(message)
 
         print("\n Selling:")
-        for i in range(len(current_sell_prices)):
+        for i in reversed(range(len(current_sell_prices))):
             message = ""
             tab = "\t"
             if current_sell_exchanges[i] == 'kraken':
@@ -154,6 +156,35 @@ class Tracking:
             message += " " + self.cc.cc(diff, color)
 
             print(message)
+
+        prices = []
+        amounts = []
+        print("\n Walls:")
+        for exchange in exchange_intersection:
+            for i in range(0,5):
+                if exchange == 'tradeogre':
+                    price = str(self.object[current_timestamp][exchange].buying[i][0])
+                else:
+                    price = str(format(self.object[current_timestamp][exchange].buying[i][0], '.8f'))
+                if price in prices:
+                    index = prices.index(price)
+                    amounts[index] += float(self.object[current_timestamp][exchange].buying[i][1])
+                else:
+                    prices.append(price)
+                    amounts.append(float(self.object[current_timestamp][exchange].buying[i][1]))
+            ##      Amount       Price
+            #self.selling[0][1], format(self.selling[0][0], '.8f')
+        for i in range(len(prices)):
+            print(" " + prices[i] + "\t" + str(amounts[i]))
+
+        # Catch when an API call fails
+        exchange_difference = list(set(self.previous_order_book_exchanges).difference(set(exchange_intersection)))
+        if len(exchange_difference) < len(self.previous_order_book_exchanges) and len(exchange_difference) != 0:
+            print("")
+            for exchange in exchange_difference:
+                print(" " + self.cc.cc(exchange,'exchange') + " API could not be reached and was excluded")
+
+        self.previous_order_book_exchanges = exchange_intersection
 
     def get_keys(self):
         return list(self.object.keys())

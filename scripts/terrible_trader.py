@@ -87,6 +87,7 @@ parameters = Parse()
 # Define what we're expecting to be passed in
 parameters.add_expectation('-crypto-main', 'string', True, False)
 parameters.add_expectation('-crypto-alt', 'string', True, False)
+parameters.add_expectation('-looped-calls', 'integer', True, False)
 
 # Assign passed in values
 parameters.parse_commandline()
@@ -98,6 +99,8 @@ parameters.validate_requirements()
 main = parameters.get_parameter('-crypto-main').value
 # Poor wanna be Crypto
 alt = parameters.get_parameter('-crypto-alt').value
+# Number of looped API calls
+looped_calls = int(parameters.get_parameter('-looped-calls').value)
 
 data = Tracking(main,alt)
 pf = PrettyFormatting(18)
@@ -184,7 +187,7 @@ buying, selling = thread5.get_thread_results()
 data.add_order_book_results(timestamp, 'poloniex', buying, selling)#, thread5.get_buy_total(), thread5.get_sell_total())
 
 runs = 0
-while(runs < 10):
+while(runs < looped_calls):
     if ((OS_TYPE == 'windows')):
         # Clear Screen Windows
         os.system('cls')
@@ -192,6 +195,7 @@ while(runs < 10):
         # Clear Screen Linux / Mac
         os.system('clear')
 
+    print("\n " + alt + "\t\t\t\t\t\tRun: " + str(runs))
     data.compare_previous_order_book()
 
     del thread1
@@ -225,31 +229,31 @@ while(runs < 10):
         buying, selling = thread1.get_thread_results()
         data.add_order_book_results(timestamp, 'kraken', buying,selling)  # ,thread1.get_buy_total(), thread1.get_sell_total())
     except:
-        print("Error kraken")
+        pass
 
     try:
         buying, selling = thread2.get_thread_results()
         data.add_order_book_results(timestamp, 'binance', buying,selling)  # , thread2.get_buy_total(), thread2.get_sell_total())
     except:
-        print("Error binance")
+        pass
 
     try:
         buying, selling = thread3.get_thread_results()
         data.add_order_book_results(timestamp, 'bittrex', buying,selling)  # , thread3.get_buy_total(), thread3.get_sell_total())
     except:
-        print("Error bittrex")
+        pass
 
     try:
         buying, selling = thread4.get_thread_results()
         data.add_order_book_results(timestamp, 'tradeogre', buying,selling)  # , thread4.get_buy_total(), thread4.get_sell_total())
     except:
-        print("Error tradeogre")
+        pass
 
     try:
         buying, selling = thread5.get_thread_results()
         data.add_order_book_results(timestamp, 'poloniex', buying,selling)  # , thread5.get_buy_total(), thread5.get_sell_total())
     except:
-        print("Error poloniex")
+        pass
 
     runs += 1
 
@@ -260,6 +264,7 @@ elif ((OS_TYPE == 'linux') or (OS_TYPE == 'macintosh')):
     # Clear Screen Linux / Mac
     os.system('clear')
 
+print("\n " + alt + "\t\t\t\t\t\tRun: " + str(runs))
 data.compare_previous_order_book()
 
 runtime.stop()
