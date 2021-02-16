@@ -202,7 +202,7 @@ class Parse:
             test = int(value)
             return 'integer'
         except:
-            pass
+            return 'string'
 
         try:
             test = float(value)
