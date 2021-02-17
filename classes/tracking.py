@@ -127,55 +127,99 @@ class Tracking:
         pf = PrettyFormatting(9)#dot_loc)
         btc_price = PrettyFormatting(2)
 
-        print("\n Buying:")
+        print("\n   Buying:")
         for i in range(len(current_buy_prices)):
             message = ""
             tab = "\t"
             if current_buy_exchanges[i] == 'kraken':
                 tab += "\t"
 
-            message += " " + self.cc.cc(current_buy_exchanges[i],'exchange')
-            message += tab + pf.middle_zero(current_buy_amounts[i])
-            message += " " + btc_price.middle_zero(current_buy_prices[i])
+            message += " " + pf.add_spaces(current_buy_exchanges[i]) + self.cc.cc(current_buy_exchanges[i],'exchange')
+            message += pf.middle_zero(current_buy_amounts[i])
+            message += btc_price.middle_zero(current_buy_prices[i])
             diff, color = pf.diff_two(self.object[previous_timestamp][current_buy_exchanges[i]].get_cheapest_buy()[1],current_buy_prices[i])
-            message += " " + self.cc.cc(diff,color)
+            message += self.cc.cc(diff,color)
 
             print(message)
 
-        print("\n Selling:")
+        print("\n  Selling:")
         for i in reversed(range(len(current_sell_prices))):
             message = ""
             tab = "\t"
             if current_sell_exchanges[i] == 'kraken':
                 tab += "\t"
 
-            message += " " + self.cc.cc(current_sell_exchanges[i], 'exchange')
-            message += tab + pf.middle_zero(current_sell_amounts[i])
-            message += " " + btc_price.middle_zero(current_sell_prices[i])
+            message += " " + pf.add_spaces(current_sell_exchanges[i]) + self.cc.cc(current_sell_exchanges[i], 'exchange')
+            message += pf.middle_zero(current_sell_amounts[i])
+            message += btc_price.middle_zero(current_sell_prices[i])
             diff, color = pf.diff_two(self.object[previous_timestamp][current_sell_exchanges[i]].get_costliest_sell()[1], current_sell_prices[i])
-            message += " " + self.cc.cc(diff, color)
+            message += self.cc.cc(diff, color)
 
             print(message)
 
-        prices = []
-        amounts = []
-        print("\n Walls:")
+        buy_prices = []
+        buy_amounts = []
+        buy_wall = {}
+        print("\n Buy Walls:")
         for exchange in exchange_intersection:
-            for i in range(0,5):
+            for i in range(7,0,-1):
                 if exchange == 'tradeogre':
                     price = str(self.object[current_timestamp][exchange].buying[i][0])
                 else:
                     price = str(format(self.object[current_timestamp][exchange].buying[i][0], '.8f'))
-                if price in prices:
-                    index = prices.index(price)
-                    amounts[index] += float(self.object[current_timestamp][exchange].buying[i][1])
+
+                if price in buy_prices:
+                    index = buy_prices.index(price)
+                    buy_amounts[index] += float(self.object[current_timestamp][exchange].buying[i][1])
                 else:
-                    prices.append(price)
-                    amounts.append(float(self.object[current_timestamp][exchange].buying[i][1]))
+                    buy_prices.append(price)
+                    buy_amounts.append(float(self.object[current_timestamp][exchange].buying[i][1]))
+
+                amount = float(self.object[current_timestamp][exchange].buying[i][1])
+
+                if price in list(buy_wall.keys()):
+                    buy_wall[price] = buy_wall[price] + amount
+                else:
+                    buy_wall[price] = amount
             ##      Amount       Price
-            #self.selling[0][1], format(self.selling[0][0], '.8f')
-        for i in range(len(prices)):
-            print(" " + prices[i] + "\t" + str(amounts[i]))
+            # self.selling[0][1], format(self.selling[0][0], '.8f')
+        #for i in range(len(buy_prices)):
+        #    print(" " + buy_prices[i] + pf.middle_zero(str(buy_amounts[i])))
+
+        for price in reversed(sorted(list(buy_wall.keys()))):
+            print(" " + price + pf.middle_zero(str(buy_wall[price])))
+
+        sell_prices = []
+        sell_amounts = []
+        sell_wall = {}
+        print("\n Sell Walls:")
+        for exchange in exchange_intersection:
+            for i in range(0, 7):
+                if exchange == 'tradeogre':
+                    price = str(self.object[current_timestamp][exchange].selling[i][0])
+                else:
+                    price = str(format(self.object[current_timestamp][exchange].selling[i][0], '.8f'))
+
+                if price in sell_prices:
+                    index = sell_prices.index(price)
+                    sell_amounts[index] += float(self.object[current_timestamp][exchange].selling[i][1])
+                else:
+                    sell_prices.append(price)
+                    sell_amounts.append(float(self.object[current_timestamp][exchange].selling[i][1]))
+
+                amount = float(self.object[current_timestamp][exchange].selling[i][1])
+
+                if price in list(sell_wall.keys()):
+                    sell_wall[price] = sell_wall[price] + amount
+                else:
+                    sell_wall[price] = amount
+            ##      Amount       Price
+            # self.selling[0][1], format(self.selling[0][0], '.8f')
+        #for i in range(len(sell_prices)):
+        #    print(" " + sell_prices[i] + pf.middle_zero(str(sell_amounts[i])))
+
+        for price in sorted(list(buy_wall.keys())):
+            print(" " + price + pf.middle_zero(str(sell_wall[price])))
 
         # Catch when an API call fails
         exchange_difference = list(set(self.previous_order_book_exchanges).difference(set(exchange_intersection)))
