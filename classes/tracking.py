@@ -14,7 +14,14 @@ class Tracking:
         # Text Coloration
         self.cc = ColoredText(colored_keys, colored_colors)
 
+        # List of exchanges from the previous order book
         self.previous_order_book_exchanges = []
+
+        # List of previous sell wall
+        self.previous_sell_wall = {}
+
+        # List of previous buy wall
+        self.previous_buy_wall = {}
 
     def add_ticker_results(self,timestamp,exchange,bid,ask,bid_volume,ask_volume):
         """
@@ -187,7 +194,16 @@ class Tracking:
         #    print(" " + buy_prices[i] + pf.middle_zero(str(buy_amounts[i])))
 
         for price in reversed(sorted(list(buy_wall.keys()))):
-            print(" " + price + pf.middle_zero(str(buy_wall[price])))
+            if price in list(self.previous_buy_wall.keys()):
+                diff, color = pf.diff_two(str(buy_wall[price]), str(self.previous_buy_wall[price]))
+            else:
+                diff = "       0"
+                color = 'grey'
+            message = " " + price
+            message += pf.middle_zero(str(buy_wall[price]))
+            message += " " + self.cc.cc(str(diff), color)
+            print(message)
+        self.previous_buy_wall = buy_wall
 
         sell_prices = []
         sell_amounts = []
@@ -218,8 +234,17 @@ class Tracking:
         #for i in range(len(sell_prices)):
         #    print(" " + sell_prices[i] + pf.middle_zero(str(sell_amounts[i])))
 
-        for price in sorted(list(buy_wall.keys())):
-            print(" " + price + pf.middle_zero(str(sell_wall[price])))
+        for price in reversed(sorted(list(sell_wall.keys()))):
+            if price in list(self.previous_sell_wall.keys()):
+                diff, color = pf.diff_two(str(sell_wall[price]),str(self.previous_sell_wall[price]))
+            else:
+                diff = "       0"
+                color = 'grey'
+            message = " " + price
+            message += pf.middle_zero(str(sell_wall[price]))
+            message += " " + self.cc.cc(str(diff),color)
+            print(message)
+        self.previous_sell_wall = sell_wall
 
         # Catch when an API call fails
         exchange_difference = list(set(self.previous_order_book_exchanges).difference(set(exchange_intersection)))

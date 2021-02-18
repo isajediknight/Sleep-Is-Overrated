@@ -79,8 +79,8 @@ class PrettyFormatting:
             else:
                 break
 
-        new_old = int(old[old_counter:])
-        new_new = int(new[new_counter:])
+        new_old = int(float(old[old_counter:]))
+        new_new = int(float(new[new_counter:]))
 
         diff = new_old - new_new
 
