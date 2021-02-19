@@ -145,7 +145,7 @@ class Tracking:
             message += pf.middle_zero(current_buy_amounts[i])
             message += btc_price.middle_zero(current_buy_prices[i])
             diff, color = pf.diff_two(self.object[previous_timestamp][current_buy_exchanges[i]].get_cheapest_buy()[1],current_buy_prices[i])
-            message += self.cc.cc(diff,color)
+            message += " " + self.cc.cc(diff,color)
 
             print(message)
 
@@ -160,7 +160,7 @@ class Tracking:
             message += pf.middle_zero(current_sell_amounts[i])
             message += btc_price.middle_zero(current_sell_prices[i])
             diff, color = pf.diff_two(self.object[previous_timestamp][current_sell_exchanges[i]].get_costliest_sell()[1], current_sell_prices[i])
-            message += self.cc.cc(diff, color)
+            message += " " + self.cc.cc(diff, color)
 
             print(message)
 
@@ -195,14 +195,23 @@ class Tracking:
 
         for price in reversed(sorted(list(buy_wall.keys()))):
             if price in list(self.previous_buy_wall.keys()):
-                diff, color = pf.diff_two(str(buy_wall[price]), str(self.previous_buy_wall[price]))
+                diff, color = pf.diff_two(str(self.previous_buy_wall[price]),str(buy_wall[price]))
             else:
                 diff = "       0"
                 color = 'grey'
-            message = " " + price
-            message += pf.middle_zero(str(buy_wall[price]))
-            message += " " + self.cc.cc(str(diff), color)
+            # 14815690.07141842
+            find_dot = str(buy_wall[price]).find('.')
+            if len(str(buy_wall[price])[find_dot:]) > 9:
+                temp_wall = str(buy_wall[price])[:find_dot] + '.' + str(buy_wall[price])[find_dot + 1:find_dot + 9]
+            else:
+                temp_wall = str(buy_wall[price])
+
+            message = "\t  " + pf.middle_zero(temp_wall)
+            message += " " + price
+            message += " " +self.cc.cc(str(diff), color)
+
             print(message)
+
         self.previous_buy_wall = buy_wall
 
         sell_prices = []
@@ -236,13 +245,21 @@ class Tracking:
 
         for price in reversed(sorted(list(sell_wall.keys()))):
             if price in list(self.previous_sell_wall.keys()):
-                diff, color = pf.diff_two(str(sell_wall[price]),str(self.previous_sell_wall[price]))
+                diff, color = pf.diff_two(str(self.previous_sell_wall[price]),str(sell_wall[price]))
             else:
                 diff = "       0"
                 color = 'grey'
-            message = " " + price
-            message += pf.middle_zero(str(sell_wall[price]))
-            message += " " + self.cc.cc(str(diff),color)
+            #14815690.07141842
+            find_dot = str(sell_wall[price]).find('.')
+            if len(str(sell_wall[price])[find_dot:]) > 9:
+                temp_wall = str(sell_wall[price])[:find_dot] + '.' + str(sell_wall[price])[find_dot+1:find_dot+9]
+            else:
+                temp_wall = str(sell_wall[price])
+
+            message = "\t  " + pf.middle_zero(temp_wall)
+            message += " " + price
+            message += " " +self.cc.cc(str(diff), color)
+
             print(message)
         self.previous_sell_wall = sell_wall
 
