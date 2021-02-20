@@ -272,6 +272,173 @@ class Tracking:
 
         self.previous_order_book_exchanges = exchange_intersection
 
+    def momentum(self):
+        timestamps = sorted(list(self.object.keys()))
+        pf = PrettyFormatting(50)
+
+        if len(timestamps) < 2:
+            raise Exception("Only one data point exists please add another data point")
+
+        # Current Timestamp of Data
+        current_timestamp = timestamps[-1]
+        # Previous Timestamp of Data
+        previous_timestamp = timestamps[-2]
+        # If an API call fails we won't have the same number of exchanges in both Timestamps - this will make us only compare where we have data for both exchanges
+        exchange_intersection = sorted(list(set(list(self.object[current_timestamp].keys())).intersection(
+            set(list(self.object[previous_timestamp].keys())))))
+
+        # Current buy data points
+        current_buy_prices = []
+        current_buy_amounts = []
+        current_buy_exchanges = []
+        # Current sell data points
+        current_sell_prices = []
+        current_sell_amounts = []
+        current_sell_exchanges = []
+
+        # Pull data out to be sorted
+        unsorted_buy_data_point = []
+        unsorted_sell_data_point = []
+        for exchange in exchange_intersection:
+            buy_price = self.object[current_timestamp][exchange].get_cheapest_buy()[1]
+            buy_amount = self.object[current_timestamp][exchange].get_cheapest_buy()[0]
+            sell_price = self.object[current_timestamp][exchange].get_costliest_sell()[1]
+            sell_amount = self.object[current_timestamp][exchange].get_costliest_sell()[0]
+            unsorted_buy_data_point.append(buy_price + "|" + str(buy_amount) + "|" + exchange)
+            unsorted_sell_data_point.append(sell_price + "|" + str(sell_amount) + "|" + exchange)
+
+        # sort the data and record it
+        for data in reversed(sorted(unsorted_buy_data_point)):
+            price, amount, exchange = data.split("|")
+            current_buy_prices.append(price)
+            current_buy_amounts.append(amount)
+            current_buy_exchanges.append(exchange)
+
+        # sort the data and record it
+        for data in sorted(unsorted_sell_data_point):
+            price, amount, exchange = data.split("|")
+            current_sell_prices.append(price)
+            current_sell_amounts.append(amount)
+            current_sell_exchanges.append(exchange)
+
+        # previous buy data points
+        previous_buy_prices = []
+        previous_buy_amounts = []
+        previous_buy_exchanges = []
+        # previous sell data points
+        previous_sell_prices = []
+        previous_sell_amounts = []
+        previous_sell_exchanges = []
+
+        # Pull data out to be sorted
+        unsorted_buy_data_point = []
+        unsorted_sell_data_point = []
+        for exchange in exchange_intersection:
+            buy_price = self.object[previous_timestamp][exchange].get_cheapest_buy()[1]
+            buy_amount = self.object[previous_timestamp][exchange].get_cheapest_buy()[0]
+            sell_price = self.object[previous_timestamp][exchange].get_costliest_sell()[1]
+            sell_amount = self.object[previous_timestamp][exchange].get_costliest_sell()[0]
+            unsorted_buy_data_point.append(buy_price + "|" + str(buy_amount) + "|" + exchange)
+            unsorted_sell_data_point.append(sell_price + "|" + str(sell_amount) + "|" + exchange)
+
+        # sort the data and record it
+        for data in reversed(sorted(unsorted_buy_data_point)):
+            price, amount, exchange = data.split("|")
+            previous_buy_prices.append(price)
+            previous_buy_amounts.append(amount)
+            previous_buy_exchanges.append(exchange)
+
+        # sort the data and record it
+        for data in sorted(unsorted_sell_data_point):
+            price, amount, exchange = data.split("|")
+            previous_sell_prices.append(price)
+            previous_sell_amounts.append(amount)
+            previous_sell_exchanges.append(exchange)
+
+        # print(str(current_buy_amounts[-1]))
+        dot_loc = str(current_buy_amounts[-1]).find('.')
+        pf = PrettyFormatting(9)  # dot_loc)
+        btc_price = PrettyFormatting(2)
+
+        sell_prices = []
+        sell_amounts = []
+        sell_wall = {}
+        for exchange in exchange_intersection:
+            for i in range(len(self.object[current_timestamp][exchange].selling)):
+                if exchange == 'tradeogre':
+                    price = str(self.object[current_timestamp][exchange].selling[i][0])
+                else:
+                    price = str(format(self.object[current_timestamp][exchange].selling[i][0], '.8f'))
+
+                if price in sell_prices:
+                    index = sell_prices.index(price)
+                    sell_amounts[index] += float(self.object[current_timestamp][exchange].selling[i][1])
+                else:
+                    sell_prices.append(price)
+                    sell_amounts.append(float(self.object[current_timestamp][exchange].selling[i][1]))
+
+                amount = float(self.object[current_timestamp][exchange].selling[i][1])
+
+                if price in list(sell_wall.keys()):
+                    sell_wall[price] = sell_wall[price] + amount
+                else:
+                    sell_wall[price] = amount
+
+        buy_prices = []
+        buy_amounts = []
+        buy_wall = {}
+        for exchange in exchange_intersection:
+            for i in range(len(self.object[current_timestamp][exchange].buying)):
+                if exchange == 'tradeogre':
+                    price = str(self.object[current_timestamp][exchange].buying[i][0])
+                else:
+                    price = str(format(self.object[current_timestamp][exchange].buying[i][0], '.8f'))
+
+                if price in buy_prices:
+                    index = buy_prices.index(price)
+                    buy_amounts[index] += float(self.object[current_timestamp][exchange].buying[i][1])
+                else:
+                    buy_prices.append(price)
+                    buy_amounts.append(float(self.object[current_timestamp][exchange].buying[i][1]))
+
+                amount = float(self.object[current_timestamp][exchange].buying[i][1])
+
+                if price in list(buy_wall.keys()):
+                    buy_wall[price] = buy_wall[price] + amount
+                else:
+                    buy_wall[price] = amount
+
+        prices_list = list(set(buy_wall.keys()).union(set(sell_wall.keys())))
+
+        largest_price = sorted(current_buy_prices)[0]
+        smallest_price = sorted(current_sell_prices)[-1]
+        build_key_list = []
+        #print(str(sorted(current_buy_prices)[0]))
+        #print(str(sorted(current_buy_prices)[-1]))
+        #print(str(sorted(current_sell_prices)[0]))
+        #print(str(sorted(current_sell_prices)[-1]))
+        for price in prices_list:
+            if(float(smallest_price) - 0.00000020 <= float(price) and float(largest_price) + 0.00000020 >= float(price)):
+                build_key_list.append(price)
+
+        for price in reversed(sorted(build_key_list)):
+            message = ""
+            exchange_print = ""
+            if price in current_buy_prices:
+                for exchange in exchange_intersection:
+                    i = current_buy_exchanges.index(exchange)
+                    if current_buy_prices[i] == price:
+                        exchange_print += " " + current_buy_exchanges[i]
+            message += pf.add_spaces(exchange_print)
+            message += price
+            if price in current_sell_prices:
+                for exchange in exchange_intersection:
+                    i = current_sell_exchanges.index(exchange)
+                    if current_sell_prices[i] == price:
+                        message += " " + current_sell_exchanges[i]
+            print(message)
+
+
     def get_keys(self):
         return list(self.object.keys())
 
