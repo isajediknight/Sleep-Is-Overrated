@@ -108,29 +108,29 @@ pf = PrettyFormatting(18)
 # Do one run
 # Define threads to run
 # 'order book'
-thread1 = thread('kraken', main, alt, 'order book')
+##thread1 = thread('kraken', main, alt, 'order book')
 thread2 = thread('binance', main, alt, 'order book');
 thread3 = thread('bittrex', main, alt, 'order book');
 thread4 = thread('tradeogre', main, alt, 'order book');
-thread5 = thread('poloniex', main, alt, 'order book');
+##thread5 = thread('poloniex', main, alt, 'order book');
 
 # Run the threads!
-thread1.start()
+##thread1.start()
 thread2.start()
 thread3.start()
 thread4.start()
-thread5.start()
+##thread5.start()
 
 # Wait for all threads to finish
-thread1.join()
+##thread1.join()
 thread2.join()
 thread3.join()
 thread4.join()
-thread5.join()
+##thread5.join()
 
 timestamp = str(datetime.datetime.now().utcnow().timestamp())
-buying, selling = thread1.get_thread_results()
-data.add_order_book_results(timestamp,'kraken',buying, selling)#,thread1.get_buy_total(), thread1.get_sell_total())
+##buying, selling = thread1.get_thread_results()
+##data.add_order_book_results(timestamp,'kraken',buying, selling)#,thread1.get_buy_total(), thread1.get_sell_total())
 
 buying, selling = thread2.get_thread_results()
 data.add_order_book_results(timestamp, 'binance', buying, selling)#, thread2.get_buy_total(), thread2.get_sell_total())
@@ -141,38 +141,38 @@ data.add_order_book_results(timestamp, 'bittrex', buying, selling)#, thread3.get
 buying, selling = thread4.get_thread_results()
 data.add_order_book_results(timestamp, 'tradeogre', buying, selling)#, thread4.get_buy_total(), thread4.get_sell_total())
 
-buying, selling = thread5.get_thread_results()
-data.add_order_book_results(timestamp, 'poloniex', buying, selling)#, thread5.get_buy_total(), thread5.get_sell_total())
+##buying, selling = thread5.get_thread_results()
+##data.add_order_book_results(timestamp, 'poloniex', buying, selling)#, thread5.get_buy_total(), thread5.get_sell_total())
 
-del thread1
+##del thread1
 del thread2
 del thread3
 del thread4
-del thread5
+##del thread5
 
-thread1 = thread('kraken', main, alt, 'order book')
+##thread1 = thread('kraken', main, alt, 'order book')
 thread2 = thread('binance', main, alt, 'order book');
 thread3 = thread('bittrex', main, alt, 'order book');
 thread4 = thread('tradeogre', main, alt, 'order book');
-thread5 = thread('poloniex', main, alt, 'order book');
+##thread5 = thread('poloniex', main, alt, 'order book');
 
 # Run the threads!
-thread1.start()
+##thread1.start()
 thread2.start()
 thread3.start()
 thread4.start()
-thread5.start()
+##thread5.start()
 
 # Wait for all threads to finish
-thread1.join()
+##thread1.join()
 thread2.join()
 thread3.join()
 thread4.join()
-thread5.join()
+##thread5.join()
 
 timestamp = str(datetime.datetime.now().utcnow().timestamp())
-buying, selling = thread1.get_thread_results()
-data.add_order_book_results(timestamp,'kraken',buying, selling)#,thread1.get_buy_total(), thread1.get_sell_total())
+##buying, selling = thread1.get_thread_results()
+##data.add_order_book_results(timestamp,'kraken',buying, selling)#,thread1.get_buy_total(), thread1.get_sell_total())
 
 buying, selling = thread2.get_thread_results()
 data.add_order_book_results(timestamp, 'binance', buying, selling)#, thread2.get_buy_total(), thread2.get_sell_total())
@@ -183,8 +183,8 @@ data.add_order_book_results(timestamp, 'bittrex', buying, selling)#, thread3.get
 buying, selling = thread4.get_thread_results()
 data.add_order_book_results(timestamp, 'tradeogre', buying, selling)#, thread4.get_buy_total(), thread4.get_sell_total())
 
-buying, selling = thread5.get_thread_results()
-data.add_order_book_results(timestamp, 'poloniex', buying, selling)#, thread5.get_buy_total(), thread5.get_sell_total())
+##buying, selling = thread5.get_thread_results()
+##data.add_order_book_results(timestamp, 'poloniex', buying, selling)#, thread5.get_buy_total(), thread5.get_sell_total())
 
 runs = 0
 while(runs < looped_calls):
@@ -198,38 +198,38 @@ while(runs < looped_calls):
     print("\n " + alt + "\t\t\t\t\t\tRun: " + str(runs))
     data.momentum()
 
-    del thread1
+    ##del thread1
     del thread2
     del thread3
     del thread4
-    del thread5
+    ##del thread5
 
-    thread1 = thread('kraken', main, alt, 'order book')
+    ##thread1 = thread('kraken', main, alt, 'order book')
     thread2 = thread('binance', main, alt, 'order book');
     thread3 = thread('bittrex', main, alt, 'order book');
     thread4 = thread('tradeogre', main, alt, 'order book');
-    thread5 = thread('poloniex', main, alt, 'order book');
+    ##thread5 = thread('poloniex', main, alt, 'order book');
 
     # Run the threads!
-    thread1.start()
+    ##thread1.start()
     thread2.start()
     thread3.start()
     thread4.start()
-    thread5.start()
+    ##thread5.start()
 
     # Wait for all threads to finish
-    thread1.join()
+    ##thread1.join()
     thread2.join()
     thread3.join()
     thread4.join()
-    thread5.join()
+    ##thread5.join()
 
     timestamp = str(datetime.datetime.now().utcnow().timestamp())
-    try:
-        buying, selling = thread1.get_thread_results()
-        data.add_order_book_results(timestamp, 'kraken', buying,selling)  # ,thread1.get_buy_total(), thread1.get_sell_total())
-    except:
-        pass
+    ##try:
+    ##    buying, selling = thread1.get_thread_results()
+    ##    data.add_order_book_results(timestamp, 'kraken', buying,selling)  # ,thread1.get_buy_total(), thread1.get_sell_total())
+    ##except:
+    ##    pass
 
     try:
         buying, selling = thread2.get_thread_results()
@@ -249,11 +249,11 @@ while(runs < looped_calls):
     except:
         pass
 
-    try:
-        buying, selling = thread5.get_thread_results()
-        data.add_order_book_results(timestamp, 'poloniex', buying,selling)  # , thread5.get_buy_total(), thread5.get_sell_total())
-    except:
-        pass
+    ##try:
+    ##    buying, selling = thread5.get_thread_results()
+    ##    data.add_order_book_results(timestamp, 'poloniex', buying,selling)  # , thread5.get_buy_total(), thread5.get_sell_total())
+    ##except:
+    ##    pass
 
     runs += 1
 

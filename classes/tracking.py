@@ -23,6 +23,9 @@ class Tracking:
         # List of previous buy wall
         self.previous_buy_wall = {}
 
+        self.buy_prices = {}
+        self.sell_prices = {}
+
     def add_ticker_results(self,timestamp,exchange,bid,ask,bid_volume,ask_volume):
         """
         Save the results
@@ -273,8 +276,18 @@ class Tracking:
         self.previous_order_book_exchanges = exchange_intersection
 
     def momentum(self):
+
+        exchange_aliases = {'tradeogre':'TO','binance':'BN','bittrex':'BT','poloniex':'PO','kraken':'KR'}
+
         timestamps = sorted(list(self.object.keys()))
-        pf = PrettyFormatting(50)
+        # RVN
+        pf_no_exchange = PrettyFormatting(44)
+        pf_exchange = PrettyFormatting(44)
+        pf = PrettyFormatting(36)
+        # DOGE
+        #pf_no_exchange = PrettyFormatting(50)
+        #pf_exchange = PrettyFormatting(50)
+        #pf = PrettyFormatting(30)
 
         if len(timestamps) < 2:
             raise Exception("Only one data point exists please add another data point")
@@ -284,8 +297,7 @@ class Tracking:
         # Previous Timestamp of Data
         previous_timestamp = timestamps[-2]
         # If an API call fails we won't have the same number of exchanges in both Timestamps - this will make us only compare where we have data for both exchanges
-        exchange_intersection = sorted(list(set(list(self.object[current_timestamp].keys())).intersection(
-            set(list(self.object[previous_timestamp].keys())))))
+        exchange_intersection = sorted(list(set(list(self.object[current_timestamp].keys())).intersection(set(list(self.object[previous_timestamp].keys())))))
 
         # Current buy data points
         current_buy_prices = []
@@ -295,6 +307,9 @@ class Tracking:
         current_sell_prices = []
         current_sell_amounts = []
         current_sell_exchanges = []
+
+        buy_price_timestamp = {}
+        sell_price_timestamp = {}
 
         # Pull data out to be sorted
         unsorted_buy_data_point = []
@@ -314,12 +329,20 @@ class Tracking:
             current_buy_amounts.append(amount)
             current_buy_exchanges.append(exchange)
 
+            if current_timestamp not in list(self.buy_prices.keys()):
+                self.buy_prices[current_timestamp] = {}
+            self.buy_prices[current_timestamp][exchange] = price
+
         # sort the data and record it
         for data in sorted(unsorted_sell_data_point):
             price, amount, exchange = data.split("|")
             current_sell_prices.append(price)
             current_sell_amounts.append(amount)
             current_sell_exchanges.append(exchange)
+
+            if current_timestamp not in list(self.sell_prices.keys()):
+                self.sell_prices[current_timestamp] = {}
+            self.sell_prices[current_timestamp][exchange] = price
 
         # previous buy data points
         previous_buy_prices = []
@@ -340,6 +363,10 @@ class Tracking:
             sell_amount = self.object[previous_timestamp][exchange].get_costliest_sell()[0]
             unsorted_buy_data_point.append(buy_price + "|" + str(buy_amount) + "|" + exchange)
             unsorted_sell_data_point.append(sell_price + "|" + str(sell_amount) + "|" + exchange)
+
+            if previous_timestamp not in list(self.buy_prices.keys()):
+                self.buy_prices[previous_timestamp] = {}
+            self.buy_prices[previous_timestamp][exchange] = price
 
         # sort the data and record it
         for data in reversed(sorted(unsorted_buy_data_point)):
@@ -408,15 +435,15 @@ class Tracking:
                 else:
                     buy_wall[price] = amount
 
+        #self.object[previous_timestamp][exchange].get_cheapest_buy()[1]
+        #self.object[previous_timestamp][exchange].get_costliest_sell()[1]
+
+
         prices_list = list(set(buy_wall.keys()).union(set(sell_wall.keys())))
 
         largest_price = sorted(current_buy_prices)[0]
         smallest_price = sorted(current_sell_prices)[-1]
         build_key_list = []
-        #print(str(sorted(current_buy_prices)[0]))
-        #print(str(sorted(current_buy_prices)[-1]))
-        #print(str(sorted(current_sell_prices)[0]))
-        #print(str(sorted(current_sell_prices)[-1]))
         for price in prices_list:
             if(float(smallest_price) - 0.00000020 <= float(price) and float(largest_price) + 0.00000020 >= float(price)):
                 build_key_list.append(price)
@@ -424,19 +451,66 @@ class Tracking:
         for price in reversed(sorted(build_key_list)):
             message = ""
             exchange_print = ""
+            spacing = ""
+            buy_exchange_boolean = False
             if price in current_buy_prices:
+                used_exchanges = []
+                buy_exchange_boolean = False
                 for exchange in exchange_intersection:
                     i = current_buy_exchanges.index(exchange)
+                    another_boolean = False
                     if current_buy_prices[i] == price:
-                        exchange_print += " " + current_buy_exchanges[i]
-            message += pf.add_spaces(exchange_print)
-            message += price
+                        spacing += " " + exchange_aliases[current_buy_exchanges[i]]
+                        buy_exchange_boolean = True
+                        used_exchanges.append(exchange)
+                    else:
+
+                        for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
+                            if((self.buy_prices[timestamp][exchange] == price) and (exchange not in used_exchanges)):
+                                spacing += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],'grey')
+                                another_boolean = True
+                                used_exchanges.append(exchange)
+                                break
+
+                        if not another_boolean:
+                            spacing += "   "
+
+
+
+                    ##for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
+                    ##    if((self.buy_prices[timestamp][exchange] == price) and (exchange not in used_exchanges)):
+                    ##        spacing += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],'grey')
+                    ##        buy_exchange_boolean = True
+                    ##        used_exchanges.append(exchange)
+
+                    #if not buy_exchange_boolean:
+                    #    spacing += "   "
+
+            if buy_exchange_boolean:
+                message += " "*24 + spacing
+                #message += pf_exchange.add_spaces(exchange_print + " " + price)
+                #message += exchange_print
+                message += " " + price
+            else:
+                message += pf_no_exchange.add_spaces(price)
+                message += price
+            spacing = ""
+            sell_exchange_boolean = False
             if price in current_sell_prices:
                 for exchange in exchange_intersection:
                     i = current_sell_exchanges.index(exchange)
                     if current_sell_prices[i] == price:
-                        message += " " + current_sell_exchanges[i]
+                        spacing += " " + exchange_aliases[current_sell_exchanges[i]]
+                        exchange_print += " " + exchange_aliases[current_sell_exchanges[i]]
+                        sell_exchange_boolean = True
+                    else:
+                        spacing += "   "
+            if sell_exchange_boolean:
+                message += spacing
+                        # message += pf_exchange.add_spaces(exchange_print + " " + price)
+                        # message += exchange_print
             print(message)
+            #print(spacing)
 
 
     def get_keys(self):
