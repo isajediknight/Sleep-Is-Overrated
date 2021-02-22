@@ -454,42 +454,35 @@ class Tracking:
             spacing = ""
             buy_exchange_boolean = False
             if price in current_buy_prices:
-                used_exchanges = []
+                used_buy_exchanges = []
+                used_sell_exchanges = []
                 buy_exchange_boolean = False
+
+                printed_price_or_below = False
                 for exchange in exchange_intersection:
                     i = current_buy_exchanges.index(exchange)
                     another_boolean = False
                     if current_buy_prices[i] == price:
                         spacing += " " + exchange_aliases[current_buy_exchanges[i]]
                         buy_exchange_boolean = True
-                        used_exchanges.append(exchange)
+                        used_buy_exchanges.append(exchange)
+                        printed_price_or_below = True
+                    #elif:
                     else:
-
                         for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
-                            if((self.buy_prices[timestamp][exchange] == price) and (exchange not in used_exchanges)):
+                            if((self.buy_prices[timestamp][exchange] == price) and (exchange not in used_buy_exchanges)):
                                 spacing += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],'grey')
                                 another_boolean = True
-                                used_exchanges.append(exchange)
+                                used_buy_exchanges.append(exchange)
                                 break
 
                         if not another_boolean:
                             spacing += "   "
 
-
-
-                    ##for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
-                    ##    if((self.buy_prices[timestamp][exchange] == price) and (exchange not in used_exchanges)):
-                    ##        spacing += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],'grey')
-                    ##        buy_exchange_boolean = True
-                    ##        used_exchanges.append(exchange)
-
-                    #if not buy_exchange_boolean:
-                    #    spacing += "   "
-
             if buy_exchange_boolean:
-                message += " "*24 + spacing
-                #message += pf_exchange.add_spaces(exchange_print + " " + price)
-                #message += exchange_print
+                message += " " * 24 + spacing
+                # message += pf_exchange.add_spaces(exchange_print + " " + price)
+                # message += exchange_print
                 message += " " + price
             else:
                 message += pf_no_exchange.add_spaces(price)
@@ -499,18 +492,33 @@ class Tracking:
             if price in current_sell_prices:
                 for exchange in exchange_intersection:
                     i = current_sell_exchanges.index(exchange)
+                    another_boolean = False
                     if current_sell_prices[i] == price:
                         spacing += " " + exchange_aliases[current_sell_exchanges[i]]
-                        exchange_print += " " + exchange_aliases[current_sell_exchanges[i]]
                         sell_exchange_boolean = True
+                        used_sell_exchanges.append(exchange)
+                        printed_price_or_below = True
+
                     else:
-                        spacing += "   "
+                        for timestamp in sorted(list(self.sell_prices.keys()))[-5:-1]:
+                            if((self.sell_prices[timestamp][exchange] == price) and (exchange not in used_sell_exchanges)):
+                                spacing += " " + self.cc.cc(exchange_aliases[current_sell_exchanges[i]],'grey')
+                                another_boolean = True
+                                used_sell_exchanges.append(exchange)
+                                break
+
+                        if not another_boolean:
+                            spacing += "   "
+
+                    #else:
+                    #    spacing += "   "
+
             if sell_exchange_boolean:
                 message += spacing
-                        # message += pf_exchange.add_spaces(exchange_print + " " + price)
-                        # message += exchange_print
+                # message += pf_exchange.add_spaces(exchange_print + " " + price)
+                # message += exchange_print
             print(message)
-            #print(spacing)
+            # print(spacing)
 
 
     def get_keys(self):
