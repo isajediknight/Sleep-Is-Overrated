@@ -450,75 +450,52 @@ class Tracking:
 
         for price in reversed(sorted(build_key_list)):
             message = ""
-            exchange_print = ""
-            spacing = ""
-            buy_exchange_boolean = False
-            if price in current_buy_prices:
-                used_buy_exchanges = []
-                used_sell_exchanges = []
-                buy_exchange_boolean = False
+            for exchange in exchange_intersection:
+                i = current_buy_exchanges.index(exchange)
 
-                printed_price_or_below = False
-                for exchange in exchange_intersection:
-                    i = current_buy_exchanges.index(exchange)
-                    another_boolean = False
-                    if current_buy_prices[i] == price:
-                        spacing += " " + exchange_aliases[current_buy_exchanges[i]]
-                        buy_exchange_boolean = True
-                        used_buy_exchanges.append(exchange)
-                        printed_price_or_below = True
-                    #elif:
-                    else:
-                        for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
-                            if((self.buy_prices[timestamp][exchange] == price) and (exchange not in used_buy_exchanges)):
-                                spacing += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],'grey')
-                                another_boolean = True
-                                used_buy_exchanges.append(exchange)
-                                break
+                previous_buy_boolean = False
+                for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
+                    if self.buy_prices[timestamp][exchange] == price:
+                        previous_buy_boolean = True
+                        this_buy_timestamp = timestamp
+                        break
 
-                        if not another_boolean:
-                            spacing += "   "
+                if current_buy_prices[i] == price:
+                    message += " " + exchange_aliases[current_buy_exchanges[i]]
+                elif previous_buy_boolean:
+                    color_direction = 'grey'
+                    timestamp_list = sorted(list(self.buy_prices.keys()))
+                    previous_timestamp = sorted(list(self.buy_prices.keys()))[timestamp_list.index(timestamp)-1]
 
-            if buy_exchange_boolean:
-                message += " " * 24 + spacing
-                # message += pf_exchange.add_spaces(exchange_print + " " + price)
-                # message += exchange_print
-                message += " " + price
-            else:
-                message += pf_no_exchange.add_spaces(price)
-                message += price
-            spacing = ""
-            sell_exchange_boolean = False
-            if price in current_sell_prices:
-                for exchange in exchange_intersection:
-                    i = current_sell_exchanges.index(exchange)
-                    another_boolean = False
-                    if current_sell_prices[i] == price:
-                        spacing += " " + exchange_aliases[current_sell_exchanges[i]]
-                        sell_exchange_boolean = True
-                        used_sell_exchanges.append(exchange)
-                        printed_price_or_below = True
+                    if float(self.buy_prices[timestamp][exchange]) > float(self.buy_prices[previous_timestamp][exchange]):
+                        color_direction = 'green'
+                    elif float(self.buy_prices[timestamp][exchange]) < float(self.buy_prices[previous_timestamp][exchange]):
+                        color_direction = 'red'
 
-                    else:
-                        for timestamp in sorted(list(self.sell_prices.keys()))[-5:-1]:
-                            if((self.sell_prices[timestamp][exchange] == price) and (exchange not in used_sell_exchanges)):
-                                spacing += " " + self.cc.cc(exchange_aliases[current_sell_exchanges[i]],'grey')
-                                another_boolean = True
-                                used_sell_exchanges.append(exchange)
-                                break
+                    self.buy_prices[timestamp][exchange]
+                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],color_direction)
+                else:
+                    message += "   "
 
-                        if not another_boolean:
-                            spacing += "   "
+            message += " " + price
 
-                    #else:
-                    #    spacing += "   "
+            for exchange in exchange_intersection:
+                i = current_sell_exchanges.index(exchange)
 
-            if sell_exchange_boolean:
-                message += spacing
-                # message += pf_exchange.add_spaces(exchange_print + " " + price)
-                # message += exchange_print
+                previous_sell_boolean = False
+                for timestamp in sorted(list(self.sell_prices.keys()))[-5:-1]:
+                    if self.sell_prices[timestamp][exchange] == price:
+                        previous_sell_boolean = True
+                        break
+
+                if current_sell_prices[i] == price:
+                    message += " " + exchange_aliases[current_sell_exchanges[i]]
+                elif previous_sell_boolean:
+                    message += " " + self.cc.cc(exchange_aliases[current_sell_exchanges[i]], 'grey')
+                else:
+                    message += "   "
+
             print(message)
-            # print(spacing)
 
 
     def get_keys(self):
