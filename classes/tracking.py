@@ -448,6 +448,28 @@ class Tracking:
             if(float(smallest_price) - 0.00000020 <= float(price) and float(largest_price) + 0.00000020 >= float(price)):
                 build_key_list.append(price)
 
+        #data_timestamps = []
+        #for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
+        #    data_timestamps.append(timestamps)
+
+        #buys = {}
+        #sells = {}
+
+        #for price in reversed(sorted(build_key_list)):
+        #    for exchange in exchange_intersection:
+        #        for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:##
+
+        #            if timestamp not in buys.keys():
+        #                buys[timestamp] = {}
+
+        #            if timestamp not in sells.keys():
+        #                sells[timestamp] = {}
+
+        #            previous_timestamp_index = data_timestamp.index(timestamp)
+
+        #            if previous_timestamp_index != -1:
+        #                if buys[data_timestamp[previous_timestamp_index]][exchange] == price
+
         for price in reversed(sorted(build_key_list)):
             message = ""
             for exchange in exchange_intersection:
@@ -469,8 +491,10 @@ class Tracking:
 
                     if float(self.buy_prices[timestamp][exchange]) > float(self.buy_prices[previous_timestamp][exchange]):
                         color_direction = 'green'
+                        message += str(self.buy_prices[timestamp][exchange]) + " " + str(format(float(self.buy_prices[previous_timestamp][exchange]),'.8f'))
                     elif float(self.buy_prices[timestamp][exchange]) < float(self.buy_prices[previous_timestamp][exchange]):
                         color_direction = 'red'
+                        message += str(self.buy_prices[timestamp][exchange]) + " " + str(format(float(self.buy_prices[previous_timestamp][exchange]),'.8f'))
 
                     self.buy_prices[timestamp][exchange]
                     message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],color_direction)
