@@ -452,23 +452,40 @@ class Tracking:
         #for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
         #    data_timestamps.append(timestamps)
 
-        #buys = {}
-        #sells = {}
+        buys = {}
+        buys_price_key = {}
+        sells = {}
+        sells_price_key = {}
 
-        #for price in reversed(sorted(build_key_list)):
-        #    for exchange in exchange_intersection:
-        #        for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:##
+        for price in reversed(sorted(build_key_list)):
+            for exchange in exchange_intersection:
+                for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
 
-        #            if timestamp not in buys.keys():
-        #                buys[timestamp] = {}
+                    if timestamp not in buys.keys():
+                        buys[timestamp] = {}
 
-        #            if timestamp not in sells.keys():
-        #                sells[timestamp] = {}
+                    if self.buy_prices[timestamp][exchange] not in list(self.buy_prices[timestamp].keys()):
+                        buys_price_key[self.buy_prices[timestamp]][exchange] = {}
 
-        #            previous_timestamp_index = data_timestamp.index(timestamp)
+                    buys[timestamp][exchange] = self.buy_prices[timestamp]
+                    buys_price_key[self.buy_prices[timestamp]][exchange] = timestamp
 
-        #            if previous_timestamp_index != -1:
-        #                if buys[data_timestamp[previous_timestamp_index]][exchange] == price
+                for timestamp in sorted(list(self.sell_prices.keys()))[-5:-1]:
+
+                    if timestamp not in sells.keys():
+                        sells[timestamp] = {}
+
+                    # self.sell_prices[timestamp]
+                    if self.sell_prices[timestamp][exchange] not in list(self.sell_prices[timestamp].keys()):
+                        sells_price_key[self.sell_prices[timestamp]][exchange] = {}
+
+                    sells[timestamp][exchange] = self.sell_prices[timestamp]
+                    sells_price_key[self.sell_prices[timestamp]][exchange] = timestamp
+
+                    #previous_timestamp_index = data_timestamp.index(timestamp)
+
+                    #if previous_timestamp_index != -1:
+                    #    if buys[data_timestamp[previous_timestamp_index]][exchange] == buy_prices[]
 
         for price in reversed(sorted(build_key_list)):
             message = ""
@@ -484,20 +501,33 @@ class Tracking:
 
                 if current_buy_prices[i] == price:
                     message += " " + exchange_aliases[current_buy_exchanges[i]]
-                elif previous_buy_boolean:
-                    color_direction = 'grey'
-                    timestamp_list = sorted(list(self.buy_prices.keys()))
-                    previous_timestamp = sorted(list(self.buy_prices.keys()))[timestamp_list.index(timestamp)-1]
+                elif price in list(buys_price_key.keys()) and buy_timestamps.index(this_buy_timestamp) > -1:
 
-                    if float(self.buy_prices[timestamp][exchange]) > float(self.buy_prices[previous_timestamp][exchange]):
+                    buy_timestamps = sorted(list(buys.keys()))
+                    current_timestamp_index = buy_timestamps.index(this_buy_timestamp)
+                    if current_timestamp_index == 0:
+                        color_direction = 'grey'
+                    elif buys[buy_timestamps[[current_timestamp_index]]] > buys[buy_timestamps[[current_timestamp_index-1]]]:
                         color_direction = 'green'
-                        message += str(self.buy_prices[timestamp][exchange]) + " " + str(format(float(self.buy_prices[previous_timestamp][exchange]),'.8f'))
-                    elif float(self.buy_prices[timestamp][exchange]) < float(self.buy_prices[previous_timestamp][exchange]):
+                    else:
                         color_direction = 'red'
-                        message += str(self.buy_prices[timestamp][exchange]) + " " + str(format(float(self.buy_prices[previous_timestamp][exchange]),'.8f'))
 
-                    self.buy_prices[timestamp][exchange]
-                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],color_direction)
+                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]], color_direction)
+
+                #elif previous_buy_boolean:
+                #    color_direction = 'grey'
+                #    timestamp_list = sorted(list(self.buy_prices.keys()))
+                #    previous_timestamp = sorted(list(self.buy_prices.keys()))[timestamp_list.index(timestamp)-1]
+
+                #    if float(self.buy_prices[timestamp][exchange]) > float(self.buy_prices[previous_timestamp][exchange]):
+                #        color_direction = 'green'
+                #        message += str(self.buy_prices[timestamp][exchange]) + " " + str(format(float(self.buy_prices[previous_timestamp][exchange]),'.8f'))
+                #    elif float(self.buy_prices[timestamp][exchange]) < float(self.buy_prices[previous_timestamp][exchange]):
+                #        color_direction = 'red'
+                #        message += str(self.buy_prices[timestamp][exchange]) + " " + str(format(float(self.buy_prices[previous_timestamp][exchange]),'.8f'))
+
+                #    self.buy_prices[timestamp][exchange]
+                #    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],color_direction)
                 else:
                     message += "   "
 
