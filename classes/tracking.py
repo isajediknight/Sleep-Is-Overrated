@@ -26,6 +26,8 @@ class Tracking:
         self.buy_prices = {}
         self.sell_prices = {}
 
+        self.Price()
+
     def add_ticker_results(self,timestamp,exchange,bid,ask,bid_volume,ask_volume):
         """
         Save the results
@@ -647,3 +649,56 @@ class Trending:
 
     def get_cc_direction_total(self):
         return self.direction_total
+
+class Price
+    def __init__(self):#,main,alt):
+        #self.exchange = exchange
+        #self.main = main
+        #self.alt = alt
+        self.kraken_timestamps = []
+        self.kraken_prices = []
+
+        self.tradeogre_timestamps = []
+        self.tradeogre_prices = []
+
+        self.binance_timestamps = []
+        self.binance_prices = []
+
+        self.bittrex_timestamps = []
+        self.bittrex_prices = []
+
+        self.poloniex_timestamps = []
+        self.poloniex_prices = []
+
+    def add_price(self,exchange,timestamp,price):
+
+        if exchange == 'kraken':
+            if timestamp not in self.kraken_timestamps:
+                self.kraken_timestamps.append(timestamp)
+                self.kraken_prices.append(price)
+        elif exchange == 'tradeogre':
+            if timestamp not in self.tradeogre_timestamps:
+                self.tradeogre_timestamps.append(timestamp)
+                self.tradeogre_prices.append(price)
+        if exchange == 'binance':
+            if timestamp not in self.binance_timestamps:
+                self.binance_timestamps.append(timestamp)
+                self.binance_prices.append(price)
+        if exchange == 'bittrex':
+            if timestamp not in self.bittrex_timestamps:
+                self.bittrex_timestamps.append(timestamp)
+                self.bittrex_prices.append(price)
+        if exchange == 'poloniex':
+            if timestamp not in self.poloniex_timestamps:
+                self.poloniex_timestamps.append(timestamp)
+                self.poloniex_prices.append(price)
+
+    def get_price_from_timestamp(self,timestamp):
+        """
+        Get price for a timestamp
+        """
+        index = self.timestamps.index(timestamp)
+        if index < 0:
+            return index
+        else:
+            return self.prices[index]
