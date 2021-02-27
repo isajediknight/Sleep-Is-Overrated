@@ -67,6 +67,8 @@ from benchmark import *
 from crypto_metrics import *
 
 from command_line_arguments import *
+
+from pretty_formatting import *
 # < ---  End  Custom Classes Import --- >
 
 runtime = Benchmark()
@@ -78,11 +80,31 @@ parameters.add_expectation('-crypto-alt', 'string', True, False)
 parameters.parse_commandline()
 parameters.validate_requirements()
 
-master = Metrics(parameters.get_parameter('-crypto-main').value, parameters.get_parameter('-crypto-alt').value)
-buying, selling = master.call_order_book('tradeogre')
-print(buying)
-print("")
-print(selling)
+#master = Metrics(parameters.get_parameter('-crypto-main').value, parameters.get_parameter('-crypto-alt').value)
+#buying, selling = master.call_order_book('kraken')
+#print(buying)
+#print("")
+#print(selling)
+
+pf = PrettyFormatting(40)
+pf_no_exchanges = PrettyFormatting(50)
+
+print(pf_no_exchanges.add_spaces('0.00000095') + '0.00000095')
+print(pf_no_exchanges.add_spaces('0.00000096') + '0.00000096')
+print(pf_no_exchanges.add_spaces('0.00000097') + '0.00000097')
+print(pf_no_exchanges.add_spaces('0.00000098') + '0.00000098')
+
+message = ""
+exchanges = 'tradeogre bittrex '
+message += pf.add_spaces(exchanges)
+message += exchanges
+message += "0.00000099"
+print(message)
+message = ""
+print(pf_no_exchanges.add_spaces('0.00000100') + '0.00000100')
+print(pf_no_exchanges.add_spaces('0.00000101') + '0.00000101')
+print(pf_no_exchanges.add_spaces('0.00000102') + '0.00000102')
+
 
 runtime.stop()
 print(" Program Runtime: " + runtime.human_readable_string())
