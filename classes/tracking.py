@@ -505,33 +505,7 @@ class Tracking:
 
                 if current_buy_prices[i] == price:
                     message += " " + exchange_aliases[current_buy_exchanges[i]]
-#                elif price in list(buys_price_key.keys()) and buy_timestamps.index(this_buy_timestamp) > -1:
-#
-#                    buy_timestamps = sorted(list(buys.keys()))
-#                    current_timestamp_index = buy_timestamps.index(this_buy_timestamp)
-#                    if current_timestamp_index == 0:
-#                        color_direction = 'grey'
-#                    elif buys[buy_timestamps[[current_timestamp_index]]] > buys[buy_timestamps[[current_timestamp_index-1]]]:
-#                        color_direction = 'green'
-#                    else:
-#                        color_direction = 'red'
-#
-#                   message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]], color_direction)
-
-                #elif previous_buy_boolean:
-                #    color_direction = 'grey'
-                #    timestamp_list = sorted(list(self.buy_prices.keys()))
-                #    previous_timestamp = sorted(list(self.buy_prices.keys()))[timestamp_list.index(timestamp)-1]
-
-                #    if float(self.buy_prices[timestamp][exchange]) > float(self.buy_prices[previous_timestamp][exchange]):
-                #        color_direction = 'green'
-                #        message += str(self.buy_prices[timestamp][exchange]) + " " + str(format(float(self.buy_prices[previous_timestamp][exchange]),'.8f'))
-                #    elif float(self.buy_prices[timestamp][exchange]) < float(self.buy_prices[previous_timestamp][exchange]):
-                #        color_direction = 'red'
-                #        message += str(self.buy_prices[timestamp][exchange]) + " " + str(format(float(self.buy_prices[previous_timestamp][exchange]),'.8f'))
-
-                #    self.buy_prices[timestamp][exchange]
-                #    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],color_direction)
+                elif price in self.track_buy_prices.check_price
                 else:
                     message += "   "
 
@@ -712,6 +686,18 @@ class Price:
                 elif price != self.poloniex_prices[-1]:
                     self.poloniex_timestamps.append(timestamp)
                     self.poloniex_prices.append(price)
+
+    def get_price_color(self,exchange,price):
+        if exchange == 'kraken' and price in self.kraken_pricess:
+            if price > 
+        elif exchange == 'tradeogre':
+            return prices in self.tradeogre_pricess
+        elif exchange == 'binance':
+            return prices in self.binance_pricess
+        elif exchange == 'bittrex':
+            return prices in self.bittrex_pricess
+        if exchange == 'poloniex':
+            return prices in self.poloniex_pricess
 
     def check_timestamp(self,exchange,timestamp):
         if exchange == 'kraken':
