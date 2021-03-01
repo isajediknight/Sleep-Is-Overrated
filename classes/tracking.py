@@ -26,7 +26,8 @@ class Tracking:
         self.buy_prices = {}
         self.sell_prices = {}
 
-        self.Price()
+        self.track_buy_prices = Price()
+        self.track_sell_prices = Price()
 
     def add_ticker_results(self,timestamp,exchange,bid,ask,bid_volume,ask_volume):
         """
@@ -334,6 +335,7 @@ class Tracking:
             if current_timestamp not in list(self.buy_prices.keys()):
                 self.buy_prices[current_timestamp] = {}
             self.buy_prices[current_timestamp][exchange] = price
+            self.track_buy_prices.add_price(exchange,current_timestamp,price)
 
         # sort the data and record it
         for data in sorted(unsorted_sell_data_point):
@@ -345,6 +347,7 @@ class Tracking:
             if current_timestamp not in list(self.sell_prices.keys()):
                 self.sell_prices[current_timestamp] = {}
             self.sell_prices[current_timestamp][exchange] = price
+            self.track_sell_prices.add_price(exchange, current_timestamp, price)
 
         # previous buy data points
         previous_buy_prices = []
@@ -454,40 +457,39 @@ class Tracking:
         #for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
         #    data_timestamps.append(timestamps)
 
-        buys = {}
-        buys_price_key = {}
-        sells = {}
-        sells_price_key = {}
-
-        for price in reversed(sorted(build_key_list)):
-            for exchange in exchange_intersection:
-                for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
-
-                    if timestamp not in buys.keys():
-                        buys[timestamp] = {}
-
-                    if self.buy_prices[timestamp][exchange] not in list(self.buy_prices[timestamp].keys()):
-                        buys_price_key[self.buy_prices[timestamp]][exchange] = {}
-
-                    buys[timestamp][exchange] = self.buy_prices[timestamp]
-                    buys_price_key[self.buy_prices[timestamp]][exchange] = timestamp
-
-                for timestamp in sorted(list(self.sell_prices.keys()))[-5:-1]:
-
-                    if timestamp not in sells.keys():
-                        sells[timestamp] = {}
-
-                    # self.sell_prices[timestamp]
-                    if self.sell_prices[timestamp][exchange] not in list(self.sell_prices[timestamp].keys()):
-                        sells_price_key[self.sell_prices[timestamp]][exchange] = {}
-
-                    sells[timestamp][exchange] = self.sell_prices[timestamp]
-                    sells_price_key[self.sell_prices[timestamp]][exchange] = timestamp
-
-                    #previous_timestamp_index = data_timestamp.index(timestamp)
-
-                    #if previous_timestamp_index != -1:
-                    #    if buys[data_timestamp[previous_timestamp_index]][exchange] == buy_prices[]
+#        buys = {}
+#        buys_price_key = {}
+#        sells = {}
+#        sells_price_key = {}
+#        for price in reversed(sorted(build_key_list)):
+#            for exchange in exchange_intersection:
+#                for timestamp in sorted(list(self.buy_prices.keys()))[-5:-1]:
+#
+#                    if timestamp not in buys.keys():
+#                        buys[timestamp] = {}
+#
+#                    if self.buy_prices[timestamp][exchange] not in list(self.buy_prices[timestamp].keys()):
+#                        buys_price_key[self.buy_prices[timestamp]][exchange] = {}
+#
+#                    buys[timestamp][exchange] = self.buy_prices[timestamp]
+#                    buys_price_key[self.buy_prices[timestamp]][exchange] = timestamp
+#
+#                for timestamp in sorted(list(self.sell_prices.keys()))[-5:-1]:
+#
+#                    if timestamp not in sells.keys():
+#                        sells[timestamp] = {}
+#
+#                    # self.sell_prices[timestamp]
+#                    if self.sell_prices[timestamp][exchange] not in list(self.sell_prices[timestamp].keys()):
+#                        sells_price_key[self.sell_prices[timestamp]][exchange] = {}
+#
+#                    sells[timestamp][exchange] = self.sell_prices[timestamp]
+#                    sells_price_key[self.sell_prices[timestamp]][exchange] = timestamp
+#
+#                    #previous_timestamp_index = data_timestamp.index(timestamp)
+#
+#                    #if previous_timestamp_index != -1:
+#                    #    if buys[data_timestamp[previous_timestamp_index]][exchange] == buy_prices[]
 
         for price in reversed(sorted(build_key_list)):
             message = ""
@@ -503,18 +505,18 @@ class Tracking:
 
                 if current_buy_prices[i] == price:
                     message += " " + exchange_aliases[current_buy_exchanges[i]]
-                elif price in list(buys_price_key.keys()) and buy_timestamps.index(this_buy_timestamp) > -1:
-
-                    buy_timestamps = sorted(list(buys.keys()))
-                    current_timestamp_index = buy_timestamps.index(this_buy_timestamp)
-                    if current_timestamp_index == 0:
-                        color_direction = 'grey'
-                    elif buys[buy_timestamps[[current_timestamp_index]]] > buys[buy_timestamps[[current_timestamp_index-1]]]:
-                        color_direction = 'green'
-                    else:
-                        color_direction = 'red'
-
-                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]], color_direction)
+#                elif price in list(buys_price_key.keys()) and buy_timestamps.index(this_buy_timestamp) > -1:
+#
+#                    buy_timestamps = sorted(list(buys.keys()))
+#                    current_timestamp_index = buy_timestamps.index(this_buy_timestamp)
+#                    if current_timestamp_index == 0:
+#                        color_direction = 'grey'
+#                    elif buys[buy_timestamps[[current_timestamp_index]]] > buys[buy_timestamps[[current_timestamp_index-1]]]:
+#                        color_direction = 'green'
+#                    else:
+#                        color_direction = 'red'
+#
+#                   message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]], color_direction)
 
                 #elif previous_buy_boolean:
                 #    color_direction = 'grey'
@@ -546,13 +548,12 @@ class Tracking:
 
                 if current_sell_prices[i] == price:
                     message += " " + exchange_aliases[current_sell_exchanges[i]]
-                elif previous_sell_boolean:
-                    message += " " + self.cc.cc(exchange_aliases[current_sell_exchanges[i]], 'grey')
+#                elif previous_sell_boolean:
+#                    message += " " + self.cc.cc(exchange_aliases[current_sell_exchanges[i]], 'grey')
                 else:
                     message += "   "
 
             print(message)
-
 
     def get_keys(self):
         return list(self.object.keys())
@@ -650,7 +651,7 @@ class Trending:
     def get_cc_direction_total(self):
         return self.direction_total
 
-class Price
+class Price:
     def __init__(self):#,main,alt):
         #self.exchange = exchange
         #self.main = main
@@ -671,29 +672,60 @@ class Price
         self.poloniex_prices = []
 
     def add_price(self,exchange,timestamp,price):
-
         if exchange == 'kraken':
             if timestamp not in self.kraken_timestamps:
-                self.kraken_timestamps.append(timestamp)
-                self.kraken_prices.append(price)
+                if len(self.kraken_prices == 0):
+                    self.kraken_timestamps.append(timestamp)
+                    self.kraken_prices.append(price)
+                elif price != self.kraken_prices[-1]:
+                    self.kraken_timestamps.append(timestamp)
+                    self.kraken_prices.append(price)
         elif exchange == 'tradeogre':
             if timestamp not in self.tradeogre_timestamps:
-                self.tradeogre_timestamps.append(timestamp)
-                self.tradeogre_prices.append(price)
+                if len(self.tradeogre_prices) == 0:
+                    self.tradeogre_timestamps.append(timestamp)
+                    self.tradeogre_prices.append(price)
+                elif price != self.tradeogre_prices[-1]:
+                    self.tradeogre_timestamps.append(timestamp)
+                    self.tradeogre_prices.append(price)
         if exchange == 'binance':
             if timestamp not in self.binance_timestamps:
-                self.binance_timestamps.append(timestamp)
-                self.binance_prices.append(price)
+                if len(self.binance_prices) == 0:
+                    self.binance_timestamps.append(timestamp)
+                    self.binance_prices.append(price)
+                elif price != self.binance_prices[-1]:
+                    self.binance_timestamps.append(timestamp)
+                    self.binance_prices.append(price)
         if exchange == 'bittrex':
             if timestamp not in self.bittrex_timestamps:
-                self.bittrex_timestamps.append(timestamp)
-                self.bittrex_prices.append(price)
+                if len(self.bittrex_prices) == 0:
+                    self.bittrex_timestamps.append(timestamp)
+                    self.bittrex_prices.append(price)
+                elif price != self.bittrex_prices[-1]:
+                    self.bittrex_timestamps.append(timestamp)
+                    self.bittrex_prices.append(price)
         if exchange == 'poloniex':
             if timestamp not in self.poloniex_timestamps:
-                self.poloniex_timestamps.append(timestamp)
-                self.poloniex_prices.append(price)
+                if len(self.poloniex_prices) == 0:
+                    self.poloniex_timestamps.append(timestamp)
+                    self.poloniex_prices.append(price)
+                elif price != self.poloniex_prices[-1]:
+                    self.poloniex_timestamps.append(timestamp)
+                    self.poloniex_prices.append(price)
 
-    def get_price_from_timestamp(self,timestamp):
+    def check_timestamp(self,exchange,timestamp):
+        if exchange == 'kraken':
+            return timestamp in self.kraken_timestamps
+        elif exchange == 'tradeogre':
+            return timestamp in self.tradeogre_timestamps
+        elif exchange == 'binance':
+            return timestamp in self.binance_timestamps
+        elif exchange == 'bittrex':
+            return timestamp in self.bittrex_timestamps
+        if exchange == 'poloniex':
+            return timestamp in self.poloniex_timestamps
+
+    def get_price_from_timestamp(self,exchange,timestamp):
         """
         Get price for a timestamp
         """
@@ -702,3 +734,21 @@ class Price
             return index
         else:
             return self.prices[index]
+
+        if exchange == 'kraken':
+            index = self.kraken_timestamps.index(timestamp)
+            return self.kraken_prices[index]
+        elif exchange == 'tradeogre':
+            index = self.tradeogre_timestamps.index(timestamp)
+            return self.tradeogre_prices[index]
+        elif exchange == 'binance':
+            index = self.binance_timestamps.index(timestamp)
+            return self.binance_prices[index]
+        elif exchange == 'bittrex':
+            index = self.bittrex_timestamps.index(timestamp)
+            return self.bittrex_prices[index]
+        elif exchange == 'poloniex':
+            index = self.poloniex_timestamps.index(timestamp)
+            return self.poloniex_prices[index]
+        else:
+            raise Exception(" Exchange " + exchange + " is not currently supported in tracking.py")
