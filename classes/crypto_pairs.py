@@ -45,6 +45,8 @@ class CryptoPairs:
                 return 'BTC-RVN'
             elif self.main == 'BTC' and self.alt == 'XRP':
                 return 'BTC-XRP'
+            elif self.main == 'BTC' and self.alt == 'BEAM':
+                return 'BTC-BEAM'
             else:
                 raise Exception(" No pair defined for " + self.exchange + " with " + self.main + " and " + self.alt)
         else:
@@ -64,6 +66,8 @@ class CryptoPairs:
                 return 'RVN/BTC'
             elif self.main == 'BTC' and self.alt == 'XRP':
                 return 'XRP/BTC'
+            elif self.main == 'BTC' and self.alt == 'BEAM':
+                return 'BEAM/BTC'
             #elif self.main == 'BTC' and self.alt == 'XHV':
             #    return 'XHV/BTC'
             else:
@@ -92,6 +96,8 @@ class CryptoPairs:
                 return 'BTC-RVN'
             elif self.main == 'BTC' and self.alt == 'XRP':
                 return 'BTC-XRP'
+            elif self.main == 'BTC' and self.alt == 'BEAM':
+                return 'BEAM-XRP'
             else:
                 raise Exception(" No pair defined for " + exchange + " with " + self.main + " and " + self.alt)
         else:
@@ -111,6 +117,8 @@ class CryptoPairs:
                 return 'RVN/BTC'
             elif self.main == 'BTC' and self.alt == 'XRP':
                 return 'XRP/BTC'
+            elif self.main == 'BTC' and self.alt == 'BEAM':
+                return 'BEAM/BTC'
 
     def supported_exchange(self,exchange):
         return exchange.lower() in ['tradeogre','binance','kraken','bittrex','poloniex']
