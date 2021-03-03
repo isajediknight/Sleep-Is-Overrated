@@ -506,7 +506,8 @@ class Tracking:
 
                 if current_buy_prices[i] == price:
                     message += " " + exchange_aliases[current_buy_exchanges[i]]
-                elif price in self.track_buy_prices.check_price
+                elif self.track_buy_prices.check_price(exchange,price):
+                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],'grey')
                 else:
                     message += "   "
 
@@ -690,7 +691,7 @@ class Price:
 
     def get_price_color(self,exchange,price):
         if exchange == 'kraken' and price in self.kraken_pricess:
-            if price > 
+            return prices in self.kraken_pricess
         elif exchange == 'tradeogre':
             return prices in self.tradeogre_pricess
         elif exchange == 'binance':
@@ -737,5 +738,19 @@ class Price:
         elif exchange == 'poloniex':
             index = self.poloniex_timestamps.index(timestamp)
             return self.poloniex_prices[index]
+        else:
+            raise Exception(" Exchange " + exchange + " is not currently supported in tracking.py")
+
+    def check_price(self,exchange,price):
+        if exchange == 'kraken':
+            return price in self.kraken_prices
+        elif exchange == 'tradeogre':
+            return price in self.tradeogre_prices
+        elif exchange == 'binance':
+            return price in self.binance_prices
+        elif exchange == 'bittrex':
+            return price in self.bittrex_prices
+        elif exchange == 'poloniex':
+            return price in self.poloniex_prices
         else:
             raise Exception(" Exchange " + exchange + " is not currently supported in tracking.py")
