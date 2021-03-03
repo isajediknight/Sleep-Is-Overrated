@@ -450,6 +450,7 @@ class Tracking:
         smallest_price = sorted(current_sell_prices)[-1]
         build_key_list = []
         for price in prices_list:
+            # Should this stay hard coded?
             if(float(smallest_price) - 0.00000020 <= float(price) and float(largest_price) + 0.00000020 >= float(price)):
                 build_key_list.append(price)
 
