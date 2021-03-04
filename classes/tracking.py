@@ -524,8 +524,8 @@ class Tracking:
 
                 if current_sell_prices[i] == price:
                     message += " " + exchange_aliases[current_sell_exchanges[i]]
-#                elif previous_sell_boolean:
-#                    message += " " + self.cc.cc(exchange_aliases[current_sell_exchanges[i]], 'grey')
+                elif self.track_sell_prices.check_price(exchange,price):
+                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],'grey')
                 else:
                     message += "   "
 
