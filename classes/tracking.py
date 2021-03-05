@@ -505,9 +505,9 @@ class Tracking:
                         break
 
                 if current_buy_prices[i] == price:
-                    message += " " + exchange_aliases[current_buy_exchanges[i]]
+                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],self.track_buy_prices.get_price_color(exchange,price))
                 elif self.track_buy_prices.check_price(exchange,price):
-                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],'grey')
+                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],self.track_buy_prices.get_price_color(exchange,price))
                 else:
                     message += "   "
 
@@ -523,9 +523,11 @@ class Tracking:
                         break
 
                 if current_sell_prices[i] == price:
-                    message += " " + exchange_aliases[current_sell_exchanges[i]]
-                elif self.track_sell_prices.check_price(exchange,price):
-                    message += " " + self.cc.cc(exchange_aliases[current_buy_exchanges[i]],'grey')
+                    message += " " + self.cc.cc(exchange_aliases[current_sell_exchanges[i]],
+                                                self.track_sell_prices.get_price_color(exchange, price))
+                elif self.track_sell_prices.check_price(exchange, price):
+                    message += " " + self.cc.cc(exchange_aliases[current_sell_exchanges[i]],
+                                                self.track_sell_prices.get_price_color(exchange, price))
                 else:
                     message += "   "
 
@@ -653,12 +655,24 @@ class Price:
                 if len(self.kraken_prices == 0):
                     self.kraken_timestamps.append(timestamp)
                     self.kraken_prices.append(price)
+                elif price in self.kraken_prices:
+                    index = self.kraken_prices.index(price)
+                    self.kraken_timestamps.pop(index)
+                    self.kraken_prices.pop(index)
+                    self.kraken_timestamps.append(timestamp)
+                    self.kraken_prices.append(price)
                 elif price != self.kraken_prices[-1]:
                     self.kraken_timestamps.append(timestamp)
                     self.kraken_prices.append(price)
         elif exchange == 'tradeogre':
             if timestamp not in self.tradeogre_timestamps:
                 if len(self.tradeogre_prices) == 0:
+                    self.tradeogre_timestamps.append(timestamp)
+                    self.tradeogre_prices.append(price)
+                elif price in self.tradeogre_prices:
+                    index = self.tradeogre_prices.index(price)
+                    self.tradeogre_timestamps.pop(index)
+                    self.tradeogre_prices.pop(index)
                     self.tradeogre_timestamps.append(timestamp)
                     self.tradeogre_prices.append(price)
                 elif price != self.tradeogre_prices[-1]:
@@ -669,12 +683,24 @@ class Price:
                 if len(self.binance_prices) == 0:
                     self.binance_timestamps.append(timestamp)
                     self.binance_prices.append(price)
+                elif price in self.binance_prices:
+                    index = self.binance_prices.index(price)
+                    self.binance_timestamps.pop(index)
+                    self.binance_prices.pop(index)
+                    self.binance_timestamps.append(timestamp)
+                    self.binance_prices.append(price)
                 elif price != self.binance_prices[-1]:
                     self.binance_timestamps.append(timestamp)
                     self.binance_prices.append(price)
         if exchange == 'bittrex':
             if timestamp not in self.bittrex_timestamps:
                 if len(self.bittrex_prices) == 0:
+                    self.bittrex_timestamps.append(timestamp)
+                    self.bittrex_prices.append(price)
+                elif price in self.bittrex_prices:
+                    index = self.bittrex_prices.index(price)
+                    self.bittrex_timestamps.pop(index)
+                    self.bittrex_prices.pop(index)
                     self.bittrex_timestamps.append(timestamp)
                     self.bittrex_prices.append(price)
                 elif price != self.bittrex_prices[-1]:
@@ -685,21 +711,97 @@ class Price:
                 if len(self.poloniex_prices) == 0:
                     self.poloniex_timestamps.append(timestamp)
                     self.poloniex_prices.append(price)
+                elif price in self.poloniex_prices:
+                    index = self.poloniex_prices.index(price)
+                    self.poloniex_timestamps.pop(index)
+                    self.poloniex_prices.pop(index)
+                    self.poloniex_timestamps.append(timestamp)
+                    self.poloniex_prices.append(price)
                 elif price != self.poloniex_prices[-1]:
                     self.poloniex_timestamps.append(timestamp)
                     self.poloniex_prices.append(price)
 
     def get_price_color(self,exchange,price):
-        if exchange == 'kraken' and price in self.kraken_pricess:
-            return prices in self.kraken_pricess
+        if exchange == 'kraken' and price in self.kraken_prices:
+            price_index = self.kraken_prices.index(price)
+            current_timestamp = self.kraken_timestamps[price_index]
+            if price_index > 0:
+                previous_timestamp = self.kraken_timestamps[price_index-1]
+                previous_price = self.kraken_prices[price_index-1]
+            else:
+                previous_timestamp = self.kraken_timestamps[price_index]
+                previous_price = self.kraken_prices[price_index]
+
+            if price > previous_price:
+                return 'green'
+            elif price < previous_price:
+                return 'red'
+            else:
+                return 'white'
         elif exchange == 'tradeogre':
-            return prices in self.tradeogre_pricess
+            price_index = self.tradeogre_prices.index(price)
+            current_timestamp = self.tradeogre_timestamps[price_index]
+            if price_index > 0:
+                previous_timestamp = self.tradeogre_timestamps[price_index - 1]
+                previous_price = self.tradeogre_prices[price_index - 1]
+            else:
+                previous_timestamp = self.tradeogre_timestamps[price_index]
+                previous_price = self.tradeogre_prices[price_index]
+
+            if price > previous_price:
+                return 'green'
+            elif price < previous_price:
+                return 'red'
+            else:
+                return 'white'
         elif exchange == 'binance':
-            return prices in self.binance_pricess
+            price_index = self.binance_prices.index(price)
+            current_timestamp = self.binance_timestamps[price_index]
+            if price_index > 0:
+                previous_timestamp = self.binance_timestamps[price_index - 1]
+                previous_price = self.binance_prices[price_index - 1]
+            else:
+                previous_timestamp = self.binance_timestamps[price_index]
+                previous_price = self.binance_prices[price_index]
+
+            if price > previous_price:
+                return 'green'
+            elif price < previous_price:
+                return 'red'
+            else:
+                return 'white'
         elif exchange == 'bittrex':
-            return prices in self.bittrex_pricess
+            price_index = self.bittrex_prices.index(price)
+            current_timestamp = self.bittrex_timestamps[price_index]
+            if price_index > 0:
+                previous_timestamp = self.bittrex_timestamps[price_index - 1]
+                previous_price = self.bittrex_prices[price_index - 1]
+            else:
+                previous_timestamp = self.bittrex_timestamps[price_index]
+                previous_price = self.bittrex_prices[price_index]
+
+            if price > previous_price:
+                return 'green'
+            elif price < previous_price:
+                return 'red'
+            else:
+                return 'white'
         if exchange == 'poloniex':
-            return prices in self.poloniex_pricess
+            price_index = self.poloniex_prices.index(price)
+            current_timestamp = self.poloniex_timestamps[price_index]
+            if price_index > 0:
+                previous_timestamp = self.poloniex_timestamps[price_index - 1]
+                previous_price = self.poloniex_prices[price_index - 1]
+            else:
+                previous_timestamp = self.poloniex_timestamps[price_index]
+                previous_price = self.poloniex_prices[price_index]
+
+            if price > previous_price:
+                return 'green'
+            elif price < previous_price:
+                return 'red'
+            else:
+                return 'white'
 
     def check_timestamp(self,exchange,timestamp):
         if exchange == 'kraken':
